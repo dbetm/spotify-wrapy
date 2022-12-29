@@ -41,7 +41,7 @@ def display_polar_graph(data: List[tuple], plot_title: str):
     values = list()
     max_value = 0
 
-    # set theme
+    # set color theme
     plt.style.use("dark_background")
 
     for item in data:
@@ -65,7 +65,6 @@ def display_polar_graph(data: List[tuple], plot_title: str):
     # set color style
     color_map = cm.get_cmap("winter")
 
-
     # Set the bar plot
     ax.bar(
         angles,
@@ -74,9 +73,6 @@ def display_polar_graph(data: List[tuple], plot_title: str):
         bottom=0.0,
         color=color_map(list(np.array(values) / max_value))
     )
-
-    # Set the labels and the font size
-    # ax.set_thetagrids(angles * 180/np.pi, labels, fontsize=10)
 
     # set labels
     ax.set_xticks(angles)
@@ -101,6 +97,14 @@ def display_polar_graph(data: List[tuple], plot_title: str):
 
     # Show the plot
     plt.show()
+
+
+def compute_unique_values(data: pd.DataFrame, column_name: str) -> int:
+    count = data[column_name].unique().size
+
+    print(f"{column_name}: {count}")
+
+    return count
 
 
 def calculate_human_total_play(
