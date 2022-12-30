@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
-from constants import DEFAULT_DATA_DIR
+from constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR
 
 
 
@@ -26,6 +26,25 @@ def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame
         data = json.load(json_file)
 
     return pd.DataFrame.from_dict(data)
+
+
+def map_int_day_to_weekday_name(day_id: int) -> str:
+    return DAYS_WEEK_MAP[day_id]
+
+
+def convert_column_utc_datetime_to_local_time(
+    data: pd.DataFrame,
+    new_tz: str,
+    column_name: str,
+    date_format: str = "%Y-%m-%d %H:%M",
+) -> pd.DataFrame:
+    data[column_name] =  pd.to_datetime(
+        data[column_name], format=date_format, utc=True
+    )
+
+    data[column_name] = data[column_name].dt.tz_convert(tz=new_tz)
+
+    return data
 
 
 if __name__ == '__main__':
