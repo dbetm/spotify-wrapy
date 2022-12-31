@@ -1,6 +1,9 @@
+import argparse
+import logging
 import os
 from functools import partial
 from datetime import datetime
+import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -19,6 +22,7 @@ from wrapy import (
     create_bar_graph,
     create_polar_graph,
     create_simple_plot,
+    get_average_plays_per_day,
     generate_plays_to_x_map,
 )
 
@@ -31,11 +35,19 @@ def setup_matplotlib(dark_theme: bool = True):
 def setup():
     setup_matplotlib()
 
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+    global logger
+    logger = logging.getLogger()
+    # logger.setLevel(logging.DEBUG)
+
 
 def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     total_plays = data.shape[0]
 
     song_skips_dict = count_song_skips(data)
+    avg_plays_per_day = get_average_plays_per_day(data)
+    avg_plays_per_day = "{:.2f}".format(avg_plays_per_day)
     total_song_skips = song_skips_dict.get("total", "ERROR")
     percentage_song_skips = song_skips_dict.get("percentage", "ERROR")
 
@@ -54,6 +66,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
         [
             f"Total de reproducciones: {total_plays}",
             f"Canciones saltadas: {total_song_skips}, {percentage_song_skips}",
+            f"Reproducciones promedio por día: {avg_plays_per_day}",
             (
                 f"Tiempo total escuchado: {played_days} día(s), {played_hours} hora(s) y"
                 f" {played_minutes} minuto(s)."
@@ -65,8 +78,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     )
 
 
-def run(local_timezone: str = "America/Mexico_City"):
-    setup()
+def run(local_timezone: str):
     data = load_streaming_history_data()
 
     new_folder = datetime.now().strftime("%Y-%m-%d %H_%M")
@@ -77,6 +89,7 @@ def run(local_timezone: str = "America/Mexico_City"):
 
     # Stats
     generate_and_save_stats(data, output_path_dir + "/" + "stats.txt")
+    logger.info("Stats generated")
 
     # Plots
     generate_plays_map_partial = partial(
@@ -111,6 +124,15 @@ def run(local_timezone: str = "America/Mexico_City"):
         save_path=output_path_dir + "/" + "plays_per_month.png",
     )
 
+    logger.info("Plots generated")
+    logger.info(f"Done, checkout the folder: {output_path_dir}/")
+
 
 if __name__  == "__main__":
-    run()
+    setup()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tz", type=str, required=False, default="America/Mexico_City")
+    args = parser.parse_args()
+
+    run(local_timezone=args.tz)

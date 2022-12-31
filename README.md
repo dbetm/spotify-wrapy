@@ -67,22 +67,33 @@ Nota: Si el comando anterior da error, puedes ejecutar:
 
 1) Dentro de la carpeta con tus datos busca un archivo llamado algo como `StreamingHistory0.json`.
 2) Copia ese archivo y pegalo en la carpeta `spotify_data/` que está dentro del repositorio.
-3) En la línea de comandos ejecuta:
+3) Activa el entorno virtual, si no se ha hecho.
+```bash
+source .venv/bin/activate
+```
+4) En la línea de comandos ejecuta:
 ```bash
 python3 app.py
 ```
-4) Los resultados se guardarán dentro de una carpeta (con nombre según la fecha y hora de ejecución) que estará dentro de la carpeta [output](output/).
+5) Los resultados se guardarán dentro de una carpeta (con nombre según la fecha y hora de ejecución) que estará dentro de la carpeta [output](output/).
 
+
+**Nota importante**: El timestamp dado por Spotify usa tiempo UTC. En este proyecto por defecto se convierte a la zona horaria de CDMX, México; puedes usar otra zona horaria ejecutando, por ejemplo, de la sig. manera:
+
+```bash
+python3 app.py --tz America/New_York
+```
+
+La lista de timezones la puedes encontrar en [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
 ------------------
 
 
 ## Contribuye
 
-Este es un proyecto sin fines de lucro hecho solo por diversión :)
+Este es un proyecto sin fines de lucro, hecho solo por diversión :)
 
-Tiene algunas mejoras, incluyendo el generar más gráficas o con otros estilos personalizables. Siénte libre de contribuir a este proyecto:
-- Haz un fork del proyecto.
-- Deriva una rama de la rama `main`.
+Tiene algunas mejoras, incluyendo el generar más gráficas o con otros estilos personalizables. Siéntete libre de contribuir:
+- Haz un fork del repositorio.
+- Deriva una rama nueva desde la rama `main`.
 - Sube tu rama y abre un Pull Request apuntando a este repositorio.
-- Happy coding!

@@ -7,6 +7,7 @@ from matplotlib import cm
 
 from constants import (
     ALLOWED_X_TARGETS,
+    DAYS_PER_YEAR,
     TOTAL_SECONDS_PER_DAY,
     TOTAL_SECONDS_PER_HOUR,
     TOTAL_SECONDS_PER_MINUTE,
@@ -54,8 +55,6 @@ def generate_plays_to_x_map(
 def compute_unique_values(data: pd.DataFrame, column_name: str) -> int:
     count = data[column_name].unique().size
 
-    print(f"{column_name}: {count}")
-
     return count
 
 
@@ -64,6 +63,12 @@ def count_song_skips(data: pd.DataFrame, ms_tolerance: int = 10_000) -> dict:
     jumps_percentage = (jumps / data.shape[0]) * 100.0
 
     return {"percentage": jumps_percentage, "total": jumps}
+
+
+def get_average_plays_per_day(data: pd.DataFrame, ms_tolerance: int = 10_000) -> float:
+    plays_without_jumps = data[data["msPlayed"] >= ms_tolerance].shape[0]
+
+    return plays_without_jumps / DAYS_PER_YEAR
 
 
 def calculate_human_total_play(
@@ -110,7 +115,7 @@ def create_polar_graph(
 
     # Set the axes, 111 to create a single plot
     ax = plt.subplot(111, polar=True)
-    ax.grid(visible=True, alpha=0.5, linewidth=1)
+    ax.grid(visible=True, alpha=0.7, linewidth=1.5)
 
     # set color style
     color_map = cm.get_cmap("winter")
