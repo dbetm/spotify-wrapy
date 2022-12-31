@@ -130,3 +130,7 @@ dmypy.json
 
 # JSON Spotify data
 spotify_data/*.json
+
+# outputs
+output/**/*.png
+output/**/*.txt
