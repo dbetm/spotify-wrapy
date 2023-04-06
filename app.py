@@ -7,9 +7,10 @@ import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from constants import DEFAULT_OUTPUT_PATH
 
+from constants import DEFAULT_OUTPUT_PATH
 from utils import (
+    get_local_timezone_name,
     load_streaming_history_data,
     map_int_day_to_weekday_name,
     separate_di_tuples_in_two_lists,
@@ -39,7 +40,6 @@ def setup():
 
     global logger
     logger = logging.getLogger()
-    # logger.setLevel(logging.DEBUG)
 
 
 def generate_and_save_stats(data: pd.DataFrame, output_path: str):
@@ -132,7 +132,10 @@ if __name__  == "__main__":
     setup()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tz", type=str, required=False, default="America/Mexico_City")
+    parser.add_argument(
+        "--tz", type=str, required=False, default=get_local_timezone_name()
+    )
     args = parser.parse_args()
+    logger.warning(f"Using timezone: {args.tz}")
 
     run(local_timezone=args.tz)
