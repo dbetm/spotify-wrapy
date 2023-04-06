@@ -78,7 +78,7 @@ python3 app.py
 5) Los resultados se guardarán dentro de una carpeta (con nombre según la fecha y hora de ejecución) que estará dentro de la carpeta [output](output/).
 
 
-**Nota importante**: El timestamp dado por Spotify usa tiempo UTC. En este proyecto por defecto se convierte a la zona horaria de CDMX, México; puedes usar otra zona horaria ejecutando, por ejemplo, de la sig. manera:
+**Nota importante**: El timestamp dado por Spotify usa tiempo UTC. En este proyecto por defecto se calcula la zona horaria de la computadora donde se ejecuta; puedes usar otra zona horaria ejecutando, por ejemplo, de la sig. manera:
 
 ```bash
 python3 app.py --tz America/New_York
