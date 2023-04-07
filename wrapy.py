@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Set, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,14 +15,28 @@ from constants import (
 from utils import convert_column_utc_datetime_to_local_time
 
 
+def __increase_key_group(groups: dict, group_name: str, key: str) -> dict:
+    """Increase accumulator by given group name and key of that group."""
+    assert group_name in groups
+
+    if not key in groups[group_name]:
+        groups[group_name][key] = 1
+    else:
+        groups[group_name][key] += 1
+
+    return groups
+
+
 def generate_plays_to_x_map(
     data: pd.DataFrame,
     local_timezone: str,
-    x_target: str,
+    target_names: Set[str],
     column_name: str = "endTime",
     date_format: str = "%Y-%m-%d %H:%M",
 ) -> List[tuple]:
-    assert x_target in ALLOWED_X_TARGETS
+
+    for target_name in target_names:
+        assert target_name in ALLOWED_X_TARGETS
 
     data = data.copy()
     data = convert_column_utc_datetime_to_local_time(
@@ -32,24 +46,29 @@ def generate_plays_to_x_map(
         date_format=date_format,
     )
 
-    results = dict()
+    groups = {"hour": dict(), "weekday": dict(), "month": dict()}
 
-    for idx, row in data.iterrows():
-        if x_target == "weekday":
-            key = row[column_name].weekday()
-        elif x_target == "month":
-            key = row[column_name].month
-        elif x_target == "hour":
-            key = row[column_name].hour
-        
-        if not key in results:
-            results[key] = 1
-        else:
-            results[key] += 1
+    for _, row in data.iterrows():
+        if "hour" in target_names:
+            key_hour = row[column_name].hour
+            groups = __increase_key_group(
+                groups, group_name="hour", key=key_hour
+            )
+        if "weekday" in target_names:
+            key_weekday = row[column_name].weekday()
+            groups = __increase_key_group(
+                groups, group_name="weekday", key=key_weekday
+            )
+        if "month" in target_names:
+            key_month = row[column_name].month
+            groups = __increase_key_group(
+                groups, group_name="month", key=key_month
+            )
 
-    sorted_results = sorted(results.items())
+    for group_name, results in groups.items():
+        groups[group_name] = sorted(results.items())
 
-    return sorted_results
+    return groups
 
 
 def compute_unique_values(data: pd.DataFrame, column_name: str) -> int:

@@ -1,16 +1,14 @@
 import argparse
-import logging
 import os
-from functools import partial
 from datetime import datetime
-import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from tzlocal import get_localzone_name
 
 from constants import DEFAULT_OUTPUT_PATH
+from logger_ import load_logger
 from utils import (
-    get_local_timezone_name,
     load_streaming_history_data,
     map_int_day_to_weekday_name,
     separate_di_tuples_in_two_lists,
@@ -36,10 +34,8 @@ def setup_matplotlib(dark_theme: bool = True):
 def setup():
     setup_matplotlib()
 
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-
     global logger
-    logger = logging.getLogger()
+    logger = load_logger()
 
 
 def generate_and_save_stats(data: pd.DataFrame, output_path: str):
@@ -47,7 +43,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
 
     song_skips_dict = count_song_skips(data)
     avg_plays_per_day = get_average_plays_per_day(data)
-    avg_plays_per_day = "{:.2f}".format(avg_plays_per_day)
+    avg_plays_per_day = str(round(avg_plays_per_day))
     total_song_skips = song_skips_dict.get("total", "ERROR")
     percentage_song_skips = song_skips_dict.get("percentage", "ERROR")
 
@@ -92,11 +88,14 @@ def run(local_timezone: str):
     logger.info("Stats generated")
 
     # Plots
-    generate_plays_map_partial = partial(
-        generate_plays_to_x_map, data=data, local_timezone=local_timezone
+    plays_per_groups = generate_plays_to_x_map(
+        data=data,
+        local_timezone=local_timezone,
+        target_names={"hour", "month", "weekday"},
     )
+
     # accumulated plays per day of the week
-    plays_per_weekday = generate_plays_map_partial(x_target="weekday")
+    plays_per_weekday = plays_per_groups["weekday"]
     create_polar_graph(
         data=plays_per_weekday,
         plot_title="Reproducciones por día de la semana",
@@ -104,7 +103,7 @@ def run(local_timezone: str):
         save_path=output_path_dir + "/" + "plays_per_weekday.png",
     )
     # accumulated plays per hour
-    plays_per_hour = generate_plays_map_partial(x_target="hour")
+    plays_per_hour = plays_per_groups["hour"]
     x_hours, y_hour_values = separate_di_tuples_in_two_lists(plays_per_hour)
     create_bar_graph(
         x=x_hours,
@@ -114,7 +113,7 @@ def run(local_timezone: str):
         save_path=output_path_dir + "/" + "plays_per_hour.png",
     )
     # accumulated plays per month - simple plot
-    plays_per_month = generate_plays_map_partial(x_target="month")
+    plays_per_month = plays_per_groups["month"]
     x_months, y_month_value = separate_di_tuples_in_two_lists(plays_per_month)
     create_simple_plot(
         x=x_months,
@@ -133,9 +132,16 @@ if __name__  == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--tz", type=str, required=False, default=get_local_timezone_name()
+        "--tz", type=str, required=False, default=get_localzone_name()
     )
     args = parser.parse_args()
-    logger.warning(f"Using timezone: {args.tz}")
+    timezone_name = args.tz
 
-    run(local_timezone=args.tz)
+    if not timezone_name:
+        logger.warning(
+            "Timezone can't be determined, using `America/Mexico_City` by default"
+        )
+    else:
+        logger.info(f"Using timezone: {timezone_name}")
+
+    run(local_timezone=timezone_name)
