@@ -3,10 +3,8 @@ import os
 from typing import Any, List, Optional, Tuple
 
 import pandas as pd
-from dateutil import tz
 
 from constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR
-
 
 
 def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame:
@@ -64,21 +62,3 @@ def write_text_lines_in_new_text_file(strings: List[str], filepath: str):
     with open(filepath, "w") as f:
         # write all the strings to the file at once
         f.writelines(string + '\n\n' for string in strings)
-
-
-def get_local_timezone_name():
-    """Get the best available name for the local timezone.
-
-    Returns:
-        str: The name of the local timezone (e.g., "America/Los_Angeles") or
-        "America/Mexico_City" by default if it cannot be determined.
-    """
-    local_tz = tz.tzlocal()
-    if hasattr(local_tz, "_filename"):
-        tz_name = os.path.basename(local_tz._filename)
-    elif hasattr(local_tz, "_tzname"):
-        tz_name = local_tz._tzname
-    else:
-        tz_name = "America/Mexico_City"
-
-    return tz_name
