@@ -35,13 +35,14 @@ def convert_column_utc_datetime_to_local_time(
     data: pd.DataFrame,
     new_tz: str,
     column_name: str,
+    new_column_name: str,
     date_format: str = "%Y-%m-%d %H:%M",
 ) -> pd.DataFrame:
     data[column_name] =  pd.to_datetime(
         data[column_name], format=date_format, utc=True
     )
 
-    data[column_name] = data[column_name].dt.tz_convert(tz=new_tz)
+    data[new_column_name] = data[column_name].dt.tz_convert(tz=new_tz)
 
     return data
 

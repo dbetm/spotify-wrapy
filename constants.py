@@ -27,3 +27,5 @@ DAYS_WEEK_MAP = {
 }
 
 ALLOWED_X_TARGETS = {"month", "weekday", "hour"}
+
+END_LOCAL_TIME_COL_NAME = "endLocalTime"

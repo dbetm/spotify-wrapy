@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from tzlocal import get_localzone_name
 
-from constants import DEFAULT_OUTPUT_PATH
+from constants import DEFAULT_OUTPUT_PATH, END_LOCAL_TIME_COL_NAME
 from logger_ import load_logger
 from utils import (
+    convert_column_utc_datetime_to_local_time,
     load_streaming_history_data,
     map_int_day_to_weekday_name,
     separate_di_tuples_in_two_lists,
@@ -47,6 +48,10 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     total_song_skips = song_skips_dict.get("total", "ERROR")
     percentage_song_skips = song_skips_dict.get("percentage", "ERROR")
 
+    start_date = data[END_LOCAL_TIME_COL_NAME].min().strftime("%d/%m/%Y")
+    end_date = data[END_LOCAL_TIME_COL_NAME].max().strftime("%d/%m/%Y")
+    time_period = f"{start_date} - {end_date}"
+
     if percentage_song_skips != "ERROR":
         percentage_song_skips = "{:.2f}".format(percentage_song_skips) + "%"
 
@@ -69,6 +74,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
             ),
             f"Artistas diferentes escuchados: {different_artists_listened}",
             f"Canciones diferentes escuchadas: {different_songs_played}",
+            f"Periodo de tiempo: {time_period}",
         ],
         filepath=output_path,
     )
@@ -76,6 +82,13 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
 
 def run(local_timezone: str):
     data = load_streaming_history_data()
+
+    data = convert_column_utc_datetime_to_local_time(
+        data=data,
+        new_tz=local_timezone,
+        column_name="endTime",
+        new_column_name=END_LOCAL_TIME_COL_NAME,
+    )
 
     new_folder = datetime.now().strftime("%Y-%m-%d %H_%M")
     output_path_dir = os.path.join(DEFAULT_OUTPUT_PATH, new_folder)
@@ -90,8 +103,8 @@ def run(local_timezone: str):
     # Plots
     plays_per_groups = generate_plays_to_x_map(
         data=data,
-        local_timezone=local_timezone,
         target_names={"hour", "month", "weekday"},
+        column_name=END_LOCAL_TIME_COL_NAME,
     )
 
     # accumulated plays per day of the week

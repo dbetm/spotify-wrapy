@@ -12,7 +12,6 @@ from constants import (
     TOTAL_SECONDS_PER_HOUR,
     TOTAL_SECONDS_PER_MINUTE,
 )
-from utils import convert_column_utc_datetime_to_local_time
 
 
 def __increase_key_group(groups: dict, group_name: str, key: str) -> dict:
@@ -29,22 +28,12 @@ def __increase_key_group(groups: dict, group_name: str, key: str) -> dict:
 
 def generate_plays_to_x_map(
     data: pd.DataFrame,
-    local_timezone: str,
     target_names: Set[str],
-    column_name: str = "endTime",
-    date_format: str = "%Y-%m-%d %H:%M",
+    column_name: str = "endLocalTime",
 ) -> List[tuple]:
 
     for target_name in target_names:
         assert target_name in ALLOWED_X_TARGETS
-
-    data = data.copy()
-    data = convert_column_utc_datetime_to_local_time(
-        data=data,
-        new_tz=local_timezone,
-        column_name=column_name,
-        date_format=date_format,
-    )
 
     groups = {"hour": dict(), "weekday": dict(), "month": dict()}
 
