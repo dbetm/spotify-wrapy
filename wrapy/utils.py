@@ -4,7 +4,7 @@ from typing import Any, List, Optional, Tuple
 
 import pandas as pd
 
-from constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR
+from wrapy.constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR
 
 
 def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame:

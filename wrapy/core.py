@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import cm
 
-from constants import (
+from wrapy.constants import (
     ALLOWED_X_TARGETS,
     DAYS_PER_YEAR,
     TOTAL_SECONDS_PER_DAY,
