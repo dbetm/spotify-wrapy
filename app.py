@@ -140,13 +140,11 @@ def run(local_timezone: str):
     logger.info(f"Done, checkout the folder: {output_path_dir}/")
 
 
-if __name__  == "__main__":
+if __name__ == "__main__":
     setup()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--tz", type=str, required=False, default=get_localzone_name()
-    )
+    parser.add_argument("--tz", type=str, required=False, default=get_localzone_name())
     args = parser.parse_args()
     timezone_name = args.tz
 
