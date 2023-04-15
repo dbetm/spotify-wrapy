@@ -31,7 +31,6 @@ def generate_plays_to_x_map(
     target_names: Set[str],
     column_name: str = "endLocalTime",
 ) -> List[tuple]:
-
     for target_name in target_names:
         assert target_name in ALLOWED_X_TARGETS
 
@@ -40,19 +39,13 @@ def generate_plays_to_x_map(
     for _, row in data.iterrows():
         if "hour" in target_names:
             key_hour = row[column_name].hour
-            groups = __increase_key_group(
-                groups, group_name="hour", key=key_hour
-            )
+            groups = __increase_key_group(groups, group_name="hour", key=key_hour)
         if "weekday" in target_names:
             key_weekday = row[column_name].weekday()
-            groups = __increase_key_group(
-                groups, group_name="weekday", key=key_weekday
-            )
+            groups = __increase_key_group(groups, group_name="weekday", key=key_weekday)
         if "month" in target_names:
             key_month = row[column_name].month
-            groups = __increase_key_group(
-                groups, group_name="month", key=key_month
-            )
+            groups = __increase_key_group(groups, group_name="month", key=key_month)
 
     for group_name, results in groups.items():
         groups[group_name] = sorted(results.items())
@@ -79,13 +72,11 @@ def get_average_plays_per_day(data: pd.DataFrame, ms_tolerance: int = 10_000) ->
     return plays_without_jumps / DAYS_PER_YEAR
 
 
-def calculate_human_total_play(
-    data: pd.DataFrame, column_name = "msPlayed"
-) -> dict:
+def calculate_human_total_play(data: pd.DataFrame, column_name="msPlayed") -> dict:
     total_ms = data[column_name].sum()
-    ms_per_day = (TOTAL_SECONDS_PER_DAY * 1000)
-    ms_per_hour = (TOTAL_SECONDS_PER_HOUR * 1000)
-    ms_per_minute = (TOTAL_SECONDS_PER_MINUTE * 1000)
+    ms_per_day = TOTAL_SECONDS_PER_DAY * 1000
+    ms_per_hour = TOTAL_SECONDS_PER_HOUR * 1000
+    ms_per_minute = TOTAL_SECONDS_PER_MINUTE * 1000
 
     # days
     total_days = total_ms // ms_per_day
@@ -102,7 +93,7 @@ def calculate_human_total_play(
 def create_polar_graph(
     data: List[tuple],
     plot_title: str,
-    label_map_fn: Callable = lambda x : x,
+    label_map_fn: Callable = lambda x: x,
     save_path: Optional[str] = None,
 ):
     labels = list()
@@ -116,7 +107,7 @@ def create_polar_graph(
         max_value = max(max_value, item[1])
 
     # Set the number of angles and the angles
-    angles = np.linspace(start=0, stop=2*np.pi, num=len(labels), endpoint=False)
+    angles = np.linspace(start=0, stop=2 * np.pi, num=len(labels), endpoint=False)
 
     # Set the figure size
     plt.figure(figsize=(8, 8))
@@ -132,9 +123,9 @@ def create_polar_graph(
     ax.bar(
         angles,
         values,
-        width=(2*np.pi) / len(labels),
+        width=(2 * np.pi) / len(labels),
         bottom=0.0,
-        color=color_map(list(np.array(values) / max_value))
+        color=color_map(list(np.array(values) / max_value)),
     )
 
     # set labels
@@ -185,12 +176,7 @@ def create_bar_graph(
     # create plot
     fig, ax = plt.subplots()
 
-    ax.bar(
-        x=x,
-        height=y,
-        tick_label=x,
-        color=color_map(list(np.array(y) / max_value))
-    )
+    ax.bar(x=x, height=y, tick_label=x, color=color_map(list(np.array(y) / max_value)))
 
     # add title and labels
     plt.title(label=plot_title, fontsize=14, pad=20)
@@ -219,7 +205,7 @@ def create_simple_plot(
     plt.plot(x, y, color="#86C8BC", linewidth=3)
     plt.xticks(x)
     plt.grid(True, linewidth=1, alpha=0.4)
-    
+
     # title and labels
     plt.title(label=plot_title, fontsize=14, pad=20)
     plt.xlabel(xlabel=x_label)

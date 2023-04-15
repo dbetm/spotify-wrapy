@@ -5,7 +5,7 @@ install:
 	)
 
 
-dev-setup:
+dev-install:
 	@( \
 		. .venv/bin/activate; \
 		pip install -r requirements-dev.txt; \
@@ -15,9 +15,12 @@ dev-setup:
 format-preview:
 	@( \
 		isort --check-only .; \
+		black --check .; \
 	)
+
 
 format-apply:
 	@( \
 		isort .; \
+		black .; \
 	)
