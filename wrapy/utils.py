@@ -1,10 +1,11 @@
 import json
 import os
+from datetime import date, datetime
 from typing import Any, List, Optional, Tuple
 
 import pandas as pd
 
-from wrapy.constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR
+from wrapy.constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR, LIMIT_DATE_FORMAT
 
 
 def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame:
@@ -90,3 +91,23 @@ def write_text_lines_in_new_text_file(strings: List[str], filepath: str):
     with open(filepath, "w") as f:
         # write all the strings to the file at once
         f.writelines(string + "\n\n" for string in strings)
+
+
+def parse_str_to_date(date_str: str) -> date:
+    """Create a Python date object from a string in the format `%Y-%m-%d`."""
+    return datetime.strptime(date_str, LIMIT_DATE_FORMAT).date()
+
+
+def filter_data_by_dates(
+    data: pd.DataFrame, column_name: str, start_date: date, end_date: date
+) -> pd.DataFrame:
+    """Filter data by the column_name given and the start_date and end_date"""
+    timezone_name = data[column_name].dt.tz
+    assert data[column_name].dtype == pd.core.dtypes.dtypes.DatetimeTZDtype(
+        tz=timezone_name
+    )
+
+    start_date = pd.Timestamp(ts_input=start_date, tz=timezone_name)
+    end_date = pd.Timestamp(ts_input=end_date, tz=timezone_name)
+
+    return data[(data[column_name] >= start_date) & (data[column_name] <= end_date)]
