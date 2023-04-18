@@ -1,12 +1,16 @@
 import argparse
 import os
-from datetime import datetime
+from datetime import date, datetime
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from tzlocal import get_localzone_name
 
-from wrapy.constants import DEFAULT_OUTPUT_PATH, END_LOCAL_TIME_COL_NAME
+from wrapy.constants import (
+    DEFAULT_OUTPUT_PATH,
+    END_LOCAL_TIME_COL_NAME,
+    LIMIT_DATE_FORMAT,
+)
 from wrapy.core import (
     calculate_human_total_play,
     compute_unique_values,
@@ -17,11 +21,14 @@ from wrapy.core import (
     generate_plays_to_x_map,
     get_average_plays_per_day,
 )
+from wrapy.custom_exceptions import ValidationError
 from wrapy.logger_ import load_logger
 from wrapy.utils import (
     convert_column_utc_datetime_to_local_time,
+    filter_data_by_dates,
     load_streaming_history_data,
     map_int_day_to_weekday_name,
+    parse_str_to_date,
     separate_di_tuples_in_two_lists,
     write_text_lines_in_new_text_file,
 )
@@ -80,7 +87,22 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     )
 
 
-def run(local_timezone: str):
+def validate_dates(start_date: date, end_date: date):
+    if not (start_date and end_date):
+        return
+
+    if (start_date and not end_date) or (end_date and not start_date):
+        logger.error("You must pass both dates: start-date and end-date")
+        raise ValidationError
+
+    if start_date > end_date:
+        logger.error("start-date must be less than end-date")
+        raise ValidationError
+
+    logger.info(f"start-date given: {start_date}, end-date given: {end_date}")
+
+
+def run(local_timezone: str, start_date: date = None, end_date: date = None):
     data = load_streaming_history_data()
 
     data = convert_column_utc_datetime_to_local_time(
@@ -89,6 +111,13 @@ def run(local_timezone: str):
         column_name="endTime",
         new_column_name=END_LOCAL_TIME_COL_NAME,
     )
+
+    if start_date and end_date:
+        data = filter_data_by_dates(data, END_LOCAL_TIME_COL_NAME, start_date, end_date)
+
+        if data.shape[0] < 2:
+            logger.error("Too few records to generate stats")
+            exit(0)
 
     new_folder = datetime.now().strftime("%Y-%m-%d %H_%M")
     output_path_dir = os.path.join(DEFAULT_OUTPUT_PATH, new_folder)
@@ -145,14 +174,34 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--tz", type=str, required=False, default=get_localzone_name())
+    parser.add_argument(
+        "-start-date",
+        type=parse_str_to_date,
+        required=False,
+        default=None,
+        help=f"Format to use: {LIMIT_DATE_FORMAT}",
+    )
+    parser.add_argument(
+        "-end-date",
+        type=parse_str_to_date,
+        required=False,
+        default=None,
+        help=f"Format to use: {LIMIT_DATE_FORMAT}",
+    )
     args = parser.parse_args()
     timezone_name = args.tz
 
     if not timezone_name:
         logger.warning(
-            "Timezone can't be determined, using `America/Mexico_City` by default"
+            "Timezone can't be determined, using 'America/Mexico_City' by default"
         )
     else:
         logger.info(f"Using timezone: {timezone_name}")
 
-    run(local_timezone=timezone_name)
+    validate_dates(args.start_date, args.end_date)
+
+    run(
+        local_timezone=timezone_name,
+        start_date=args.start_date,
+        end_date=args.end_date,
+    )
