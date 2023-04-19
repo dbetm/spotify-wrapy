@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Tuple
 
 import pandas as pd
 
-from wrapy.constants import DAYS_WEEK_MAP, DEFAULT_DATA_DIR, LIMIT_DATE_FORMAT
+from wrapy.constants import DEFAULT_DATA_DIR, LIMIT_DATE_FORMAT
 
 
 def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame:
@@ -37,10 +37,10 @@ def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame
     return pd.DataFrame.from_dict(data)
 
 
-def map_int_day_to_weekday_name(day_id: int) -> str:
+def map_int_day_to_weekday_name(days_week_map: dict, day_id: int) -> str:
     """Given the `day_id` as a numeric integer used by Python to define weekdays (0 is
     Monday and 6 is Sunday), returns the corresponding string name of the weekday."""
-    return DAYS_WEEK_MAP[day_id]
+    return days_week_map[day_id]
 
 
 def convert_column_utc_datetime_to_local_time(
