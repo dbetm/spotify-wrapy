@@ -1,12 +1,15 @@
 import argparse
 import os
 from datetime import date, datetime
+from functools import partial
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from tzlocal import get_localzone_name
 
 from wrapy.constants import (
+    DAYS_WEEK_MAP,
+    DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
     END_LOCAL_TIME_COL_NAME,
     LIMIT_DATE_FORMAT,
@@ -22,6 +25,7 @@ from wrapy.core import (
     get_average_plays_per_day,
 )
 from wrapy.custom_exceptions import ValidationError
+from wrapy.lang import EnLocale, EsLocale
 from wrapy.logger_ import load_logger
 from wrapy.utils import (
     convert_column_utc_datetime_to_local_time,
@@ -39,11 +43,14 @@ def setup_matplotlib(dark_theme: bool = True):
         plt.style.use("dark_background")
 
 
-def setup():
+def setup(lang: str):
     setup_matplotlib()
 
     global logger
     logger = load_logger()
+
+    global locale
+    locale = EnLocale() if lang == "english" else EsLocale()
 
 
 def generate_and_save_stats(data: pd.DataFrame, output_path: str):
@@ -55,8 +62,8 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     total_song_skips = song_skips_dict.get("total", "ERROR")
     percentage_song_skips = song_skips_dict.get("percentage", "ERROR")
 
-    start_date = data[END_LOCAL_TIME_COL_NAME].min().strftime("%d/%m/%Y")
-    end_date = data[END_LOCAL_TIME_COL_NAME].max().strftime("%d/%m/%Y")
+    start_date = data[END_LOCAL_TIME_COL_NAME].min().strftime("%Y/%m/%d")
+    end_date = data[END_LOCAL_TIME_COL_NAME].max().strftime("%Y/%m/%d")
     time_period = f"{start_date} - {end_date}"
 
     if percentage_song_skips != "ERROR":
@@ -72,16 +79,18 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
 
     write_text_lines_in_new_text_file(
         [
-            f"Total de reproducciones: {total_plays}",
-            f"Canciones saltadas: {total_song_skips}, {percentage_song_skips}",
-            f"Reproducciones promedio por día: {avg_plays_per_day}",
+            f"{locale.get_attr('total_play')}: {total_plays}",
+            f"{locale.get_attr('song_skips')}: {total_song_skips}, {percentage_song_skips}",
+            f"{locale.get_attr('avg_plays_per_day')}: {avg_plays_per_day}",
             (
-                f"Tiempo total escuchado: {played_days} día(s), {played_hours} hora(s) y"
-                f" {played_minutes} minuto(s)."
+                f"{locale.get_attr('total_play_listened')}:"
+                f" {played_days} {locale.get_attr('day', True)},"
+                f" {played_hours} {locale.get_attr('hour', True)},"
+                f" {played_minutes} {locale.get_attr('minute', True)}",
             ),
-            f"Artistas diferentes escuchados: {different_artists_listened}",
-            f"Canciones diferentes escuchadas: {different_songs_played}",
-            f"Periodo de tiempo: {time_period}",
+            f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
+            f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
+            f"{locale.get_attr('time_period')}: {time_period}",
         ],
         filepath=output_path,
     )
@@ -138,10 +147,12 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
 
     # accumulated plays per day of the week
     plays_per_weekday = plays_per_groups["weekday"]
+    days_week_map = DAYS_WEEK_MAP_EN if isinstance(locale, EnLocale) else DAYS_WEEK_MAP
+
     create_polar_graph(
         data=plays_per_weekday,
-        plot_title="Reproducciones por día de la semana",
-        label_map_fn=map_int_day_to_weekday_name,
+        plot_title=locale.get_attr("plays_per_weekday_plot_title"),
+        label_map_fn=partial(map_int_day_to_weekday_name, days_week_map),
         save_path=output_path_dir + "/" + "plays_per_weekday.png",
     )
     # accumulated plays per hour
@@ -150,8 +161,8 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
     create_bar_graph(
         x=x_hours,
         y=y_hour_values,
-        plot_title="Reproducciones por hora",
-        x_label="hora",
+        plot_title=locale.get_attr("plays_per_hour_plot_title"),
+        x_label=locale.get_attr("hour"),
         save_path=output_path_dir + "/" + "plays_per_hour.png",
     )
     # accumulated plays per month - simple plot
@@ -160,8 +171,8 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
     create_simple_plot(
         x=x_months,
         y=y_month_value,
-        plot_title="Reproducciones por mes",
-        x_label="mes",
+        plot_title=locale.get_attr("plays_per_month_plot_title"),
+        x_label=locale.get_attr("month"),
         save_path=output_path_dir + "/" + "plays_per_month.png",
     )
 
@@ -170,8 +181,6 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
 
 
 if __name__ == "__main__":
-    setup()
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--tz", type=str, required=False, default=get_localzone_name())
     parser.add_argument(
@@ -188,8 +197,17 @@ if __name__ == "__main__":
         default=None,
         help=f"Format to use: {LIMIT_DATE_FORMAT}",
     )
+    parser.add_argument(
+        "--lang",
+        choices=["spanish", "english"],
+        required=False,
+        default="english",
+        help="Language to use for the stats and plots",
+    )
     args = parser.parse_args()
     timezone_name = args.tz
+
+    setup(args.lang)
 
     if not timezone_name:
         logger.warning(
