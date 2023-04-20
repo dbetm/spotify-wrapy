@@ -6,3 +6,7 @@
 
 - [ ] Run format-apply.
 - [ ] Add docstring in diffucult code parts.
+
+------
+
+This closes #{issue_number}
