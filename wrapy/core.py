@@ -72,6 +72,15 @@ def get_average_plays_per_day(data: pd.DataFrame, ms_tolerance: int = 10_000) ->
     return plays_without_jumps / DAYS_PER_YEAR
 
 
+def get_top_songs(
+    data: pd.DataFrame, k_top: int = 5, column_name: str = "trackName"
+) -> dict:
+    """Get the most listened songs."""
+    song_counts = data[column_name].value_counts(ascending=False)
+
+    return song_counts.head(k_top).to_dict()
+
+
 def calculate_human_total_play(data: pd.DataFrame, column_name="msPlayed") -> dict:
     total_ms = data[column_name].sum()
     ms_per_day = TOTAL_SECONDS_PER_DAY * 1000
@@ -217,3 +226,32 @@ def create_simple_plot(
         plt.savefig(save_path)
     else:
         plt.show()
+
+
+def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> None:
+    # Create a new figure and axis
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
+
+    # Remove axis and ticks
+    ax.axis("off")
+
+    # draw text lines on the card
+    number_lines = len(text_lines)
+
+    # Calculate the initial Y position based on the number of lines and their height
+    y = 1 - 1 / (number_lines + 1)
+
+    # Add the title with center alignment
+    ax.text(
+        x=0.5, y=y, s=title, ha="center", fontsize=16, color="#86C8BC", weight="bold"
+    )
+    # Update the Y position for the next line
+    y -= 1 / (number_lines + 2)
+
+    # Add each line of text
+    for line in text_lines:
+        ax.text(x=0.5, y=y, s=line, ha="center")
+        y -= 1 / (number_lines + 1)
+
+    plt.savefig(save_path, bbox_inches="tight")
+    plt.close(fig)

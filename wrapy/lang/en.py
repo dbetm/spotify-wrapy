@@ -17,3 +17,4 @@ class EnLocale(Locale):
         self._plays_per_weekday_plot_title = "Plays per weekday"
         self._plays_per_hour_plot_title = "Plays per hour"
         self._plays_per_month_plot_title = "Plays per month"
+        self._top_songs_card_title = "Top songs listened to"

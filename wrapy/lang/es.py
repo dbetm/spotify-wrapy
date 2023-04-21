@@ -17,3 +17,4 @@ class EsLocale(Locale):
         self._plays_per_weekday_plot_title = "Reproducciones por día de la semana"
         self._plays_per_hour_plot_title = "Reproducciones por hora"
         self._plays_per_month_plot_title = "Reproducciones por mes"
+        self._top_songs_card_title = "Canciones más escuchadas"

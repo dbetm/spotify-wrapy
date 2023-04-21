@@ -2,7 +2,7 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Genera tres gráficas para visualizar las reproducciones por día de la semana, hora y mes. Además, algunos conteos simples como el tiempo total de reproducción en días, horas y minutos, total de reproducciones, canciones saltadas, número de artistas y canciones diferentes escuchadas.
+Genera tres gráficas para visualizar las reproducciones por día de la semana, hora y mes, y una card como imagen con las canciones más escuchadas. Además, algunos conteos simples como el tiempo total de reproducción en días, horas y minutos, total de reproducciones, canciones saltadas, número de artistas y canciones diferentes escuchadas.
 
 ![](assets/plays_per_hour.png)
 
