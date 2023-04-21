@@ -18,11 +18,13 @@ from wrapy.core import (
     calculate_human_total_play,
     compute_unique_values,
     count_song_skips,
+    create_and_save_text_card,
     create_bar_graph,
     create_polar_graph,
     create_simple_plot,
     generate_plays_to_x_map,
     get_average_plays_per_day,
+    get_top_songs,
 )
 from wrapy.custom_exceptions import ValidationError
 from wrapy.lang import EnLocale, EsLocale
@@ -86,7 +88,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
                 f"{locale.get_attr('total_play_listened')}:"
                 f" {played_days} {locale.get_attr('day', True)},"
                 f" {played_hours} {locale.get_attr('hour', True)},"
-                f" {played_minutes} {locale.get_attr('minute', True)}",
+                f" {played_minutes} {locale.get_attr('minute', True)}"
             ),
             f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
             f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
@@ -143,6 +145,14 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
         data=data,
         target_names={"hour", "month", "weekday"},
         column_name=END_LOCAL_TIME_COL_NAME,
+    )
+
+    # top songs
+    top_songs = get_top_songs(data)
+    create_and_save_text_card(
+        locale.get_attr("top_songs_card_title"),
+        [f"{song} - {times}" for song, times in top_songs.items()],
+        os.path.join(output_path_dir, "top_songs.png"),
     )
 
     # accumulated plays per day of the week

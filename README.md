@@ -2,7 +2,7 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Create three charts to visualize playbacks by day of the week, hour, and month. Plus, get some simple counts like total play time in days, hours, and minutes, total playbacks, skipped songs, and the number of different artists and songs you've listened to.
+Create three charts to visualize playbacks by day of the week, hour, and month, one card as image with the top songs listented to. Plus, get some simple counts like total play time in days, hours, and minutes, total playbacks, skipped songs, and the number of different artists and songs you've listened to.
 
 ![](assets/plays_per_month.png)
 
