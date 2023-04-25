@@ -187,8 +187,8 @@ def run(
     top_songs = get_top_songs(data)
     create_and_save_text_card(
         locale.get_attr("top_songs_card_title"),
-        [f"{song} - {times}" for song, times in top_songs.items()],
-        os.path.join(output_path_dir, "01_top_songs.png"),
+        [f"{song}: {times}" for song, times in top_songs.items()],
+        os.path.join(output_path_dir, "top_songs.png"),
     )
 
     # accumulated plays per day of the week

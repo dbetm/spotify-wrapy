@@ -33,8 +33,6 @@ def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame
                 f"Error trying to find streaming data in default dir ({DEFAULT_DATA_DIR})"
             )
 
-    print(file_paths)
-
     data = list()
     for file_path in file_paths:
         with open(file_path) as json_file:

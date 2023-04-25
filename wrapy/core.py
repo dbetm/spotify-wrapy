@@ -246,14 +246,14 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
 
     # Add the title with center alignment
     ax.text(
-        x=0.5, y=y, s=title, ha="center", fontsize=16, color="#86C8BC", weight="bold"
+        x=0.5, y=y, s=title, ha="center", fontsize=18, color="#86C8BC", weight="bold"
     )
     # Update the Y position for the next line
     y -= 0.15
 
     # Add each line of text
     for line in text_lines:
-        ax.text(x=0.5, y=y, s=line, ha="center")
+        ax.text(x=0.5, y=y, s=line, ha="center", fontsize=14)
         y -= delta
 
     plt.savefig(save_path, bbox_inches="tight")
