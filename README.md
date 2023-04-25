@@ -2,7 +2,7 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Create three charts to visualize playbacks by day of the week, hour, and month, one card as image with the top songs listented to. Plus, get some simple counts like total play time in days, hours, and minutes, total playbacks, skipped songs, and the number of different artists and songs you've listened to.
+Create three charts to visualize playbacks by day of the week, hour, and month, one card as image with the top songs listented to. Plus, get some simple counts like total play time in days, hours, and minutes, total playbacks, skipped songs, and the number of different artists and songs you've listened to. Optionally you can generate a video.
 
 ![](assets/plays_per_month.png)
 
@@ -79,7 +79,11 @@ It also supports Spanish language: `python3 app.py --lang spanish`. If this argu
 
 Alternatively, you can pass a start and end date to limit the data used, for example:
 ```bash
-python3 app.py --lang english -start-date 2022-01-13 -end-date 2023-01-01
+python3 app.py --lang english --start-date 2022-01-13 --end-date 2023-01-01
+```
+And you can generate a video, passing the `video` flag:
+```bash
+python3 app.py --lang english --video
 ```
 5) The results will be saved in a folder (named according to the datetime of execution) inside the [output](output/) folder.
 

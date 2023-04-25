@@ -22,17 +22,23 @@ def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame
     """
     if not file_path:
         files_ = os.listdir(DEFAULT_DATA_DIR)
+        file_paths = []
 
-        try:
-            file_path = list(filter(lambda a: "StreamingHistory" in a, files_))[0]
-            file_path = f"{DEFAULT_DATA_DIR}/{file_path}"
-        except Exception as e:
-            raise e(
+        for file_ in files_:
+            if file_.startswith("StreamingHistory"):
+                file_paths.append(f"{DEFAULT_DATA_DIR}/{file_}")
+
+        if len(file_paths) == 0:
+            raise Exception(
                 f"Error trying to find streaming data in default dir ({DEFAULT_DATA_DIR})"
             )
 
-    with open(file_path) as json_file:
-        data = json.load(json_file)
+    print(file_paths)
+
+    data = list()
+    for file_path in file_paths:
+        with open(file_path) as json_file:
+            data += json.load(json_file)
 
     return pd.DataFrame.from_dict(data)
 

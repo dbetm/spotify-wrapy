@@ -2,7 +2,7 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Genera tres gráficas para visualizar las reproducciones por día de la semana, hora y mes, y una card como imagen con las canciones más escuchadas. Además, algunos conteos simples como el tiempo total de reproducción en días, horas y minutos, total de reproducciones, canciones saltadas, número de artistas y canciones diferentes escuchadas.
+Genera tres gráficas para visualizar las reproducciones por día de la semana, hora y mes, y una card como imagen con las canciones más escuchadas. Además, algunos conteos simples como el tiempo total de reproducción en días, horas y minutos, total de reproducciones, canciones saltadas, número de artistas y canciones diferentes escuchadas. Opcionalmente permite crear un video.
 
 ![](assets/plays_per_hour.png)
 
@@ -82,7 +82,11 @@ También soporta idioma inglés: `python3 app.py --lang english` si no se pasa e
 
 Alternativamente puedes pasar la fecha de inicio y final para delimitar los datos a usar, ejemplo:
 ```bash
-python3 app.py --lang spanish -start-date 2022-01-13 -end-date 2023-01-01
+python3 app.py --lang spanish --start-date 2022-01-13 --end-date 2023-01-01
+```
+Y también puedes generar un video, pasándo la opción `video`.
+```bash
+python3 app.py --lang english --video
 ```
 5) Los resultados se guardarán dentro de una carpeta (con nombre según la fecha y hora de ejecución) que estará dentro de la carpeta [output](output/).
 

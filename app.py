@@ -2,23 +2,27 @@ import argparse
 import os
 from datetime import date, datetime
 from functools import partial
+from typing import List
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from tzlocal import get_localzone_name
 
 from wrapy.constants import (
+    AUDIO_FOR_VIDEO,
     DAYS_WEEK_MAP,
     DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
     END_LOCAL_TIME_COL_NAME,
     LIMIT_DATE_FORMAT,
+    REPO_URL,
 )
 from wrapy.core import (
     calculate_human_total_play,
     compute_unique_values,
     count_song_skips,
     create_and_save_text_card,
+    create_and_save_title_card,
     create_bar_graph,
     create_polar_graph,
     create_simple_plot,
@@ -38,6 +42,7 @@ from wrapy.utils import (
     separate_di_tuples_in_two_lists,
     write_text_lines_in_new_text_file,
 )
+from wrapy.video.maker import VideoMaker
 
 
 def setup_matplotlib(dark_theme: bool = True):
@@ -55,7 +60,7 @@ def setup(lang: str):
     locale = EnLocale() if lang == "english" else EsLocale()
 
 
-def generate_and_save_stats(data: pd.DataFrame, output_path: str):
+def generate_and_save_stats(data: pd.DataFrame, output_path: str) -> list:
     total_plays = data.shape[0]
 
     song_skips_dict = count_song_skips(data)
@@ -79,23 +84,24 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str):
     different_artists_listened = compute_unique_values(data, column_name="artistName")
     different_songs_played = compute_unique_values(data, column_name="trackName")
 
-    write_text_lines_in_new_text_file(
-        [
-            f"{locale.get_attr('total_play')}: {total_plays}",
-            f"{locale.get_attr('song_skips')}: {total_song_skips}, {percentage_song_skips}",
-            f"{locale.get_attr('avg_plays_per_day')}: {avg_plays_per_day}",
-            (
-                f"{locale.get_attr('total_play_listened')}:"
-                f" {played_days} {locale.get_attr('day', True)},"
-                f" {played_hours} {locale.get_attr('hour', True)},"
-                f" {played_minutes} {locale.get_attr('minute', True)}"
-            ),
-            f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
-            f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
-            f"{locale.get_attr('time_period')}: {time_period}",
-        ],
-        filepath=output_path,
-    )
+    text_stats = [
+        f"{locale.get_attr('total_play')}: {total_plays}",
+        f"{locale.get_attr('song_skips')}: {total_song_skips}, {percentage_song_skips}",
+        f"{locale.get_attr('avg_plays_per_day')}: {avg_plays_per_day}",
+        (
+            f"{locale.get_attr('total_play_listened')}:"
+            f" {played_days} {locale.get_attr('day', True)},"
+            f" {played_hours} {locale.get_attr('hour', True)},"
+            f" {played_minutes} {locale.get_attr('minute', True)}"
+        ),
+        f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
+        f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
+        f"{locale.get_attr('time_period')}: {time_period}",
+    ]
+
+    write_text_lines_in_new_text_file(text_stats, filepath=output_path)
+
+    return text_stats
 
 
 def validate_dates(start_date: date, end_date: date):
@@ -113,7 +119,37 @@ def validate_dates(start_date: date, end_date: date):
     logger.info(f"start-date given: {start_date}, end-date given: {end_date}")
 
 
-def run(local_timezone: str, start_date: date = None, end_date: date = None):
+def make_video(output_path_dir: str, text_stats: List[str]) -> None:
+    # create card for intro
+    intro_card_path = os.path.join(output_path_dir, "00_intro.png")
+    create_and_save_title_card("My Spotify Wrapy 2023'", intro_card_path, font_size=18)
+    # create card for stats
+    stats_card_path = os.path.join(output_path_dir, "stats.png")
+    create_and_save_text_card("STATS", text_stats, stats_card_path)
+    # create card for credits
+    credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
+    create_and_save_title_card(f"Download from {REPO_URL}", credits_card_path)
+
+    image_paths = [
+        os.path.join(output_path_dir, f)
+        for f in os.listdir(output_path_dir)
+        if f.endswith(".png")
+    ]
+
+    image_paths.sort()
+
+    VideoMaker(image_paths).make(
+        output_path=os.path.join(output_path_dir, "my_wrapy.mp4"),
+        audio_path=AUDIO_FOR_VIDEO,
+    )
+
+
+def run(
+    local_timezone: str,
+    start_date: date = None,
+    end_date: date = None,
+    create_video: bool = False,
+):
     data = load_streaming_history_data()
 
     data = convert_column_utc_datetime_to_local_time(
@@ -137,7 +173,7 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
         os.mkdir(output_path_dir)
 
     # Stats
-    generate_and_save_stats(data, output_path_dir + "/" + "stats.txt")
+    text_stats = generate_and_save_stats(data, output_path_dir + "/" + "stats.txt")
     logger.info("Stats generated")
 
     # Plots
@@ -152,7 +188,7 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
     create_and_save_text_card(
         locale.get_attr("top_songs_card_title"),
         [f"{song} - {times}" for song, times in top_songs.items()],
-        os.path.join(output_path_dir, "top_songs.png"),
+        os.path.join(output_path_dir, "01_top_songs.png"),
     )
 
     # accumulated plays per day of the week
@@ -187,6 +223,11 @@ def run(local_timezone: str, start_date: date = None, end_date: date = None):
     )
 
     logger.info("Plots generated")
+
+    if create_video:
+        logger.info("Generating video...")
+        make_video(output_path_dir=output_path_dir, text_stats=text_stats)
+
     logger.info(f"Done, checkout the folder: {output_path_dir}/")
 
 
@@ -194,14 +235,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--tz", type=str, required=False, default=get_localzone_name())
     parser.add_argument(
-        "-start-date",
+        "--start-date",
         type=parse_str_to_date,
         required=False,
         default=None,
         help=f"Format to use: {LIMIT_DATE_FORMAT}",
     )
     parser.add_argument(
-        "-end-date",
+        "--end-date",
         type=parse_str_to_date,
         required=False,
         default=None,
@@ -214,6 +255,7 @@ if __name__ == "__main__":
         default="english",
         help="Language to use for the stats and plots",
     )
+    parser.add_argument("--video", action="store_true", help="enable generate a video")
     args = parser.parse_args()
     timezone_name = args.tz
 
@@ -232,4 +274,5 @@ if __name__ == "__main__":
         local_timezone=timezone_name,
         start_date=args.start_date,
         end_date=args.end_date,
+        create_video=args.video,
     )
