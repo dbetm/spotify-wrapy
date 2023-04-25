@@ -177,7 +177,7 @@ def create_bar_graph(
     max_value = max(y)
 
     # Set the figure size, width and heigh in inches
-    plt.rcParams["figure.figsize"] = (10, 5)
+    plt.rcParams["figure.figsize"] = (10, 10)
 
     # set color palette
     color_map = cm.get_cmap("winter")
@@ -232,26 +232,52 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
     # Create a new figure and axis
     fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
 
+    assert len(text_lines) < 10, "text_lines must be contains less than 10 strings"
+
     # Remove axis and ticks
     ax.axis("off")
 
     # draw text lines on the card
-    number_lines = len(text_lines)
+    # number_lines = len(text_lines)
 
-    # Calculate the initial Y position based on the number of lines and their height
-    y = 1 - 1 / (number_lines + 1)
+    # Define the initial Y position and their delta
+    y = 0.85
+    delta = 0.10
 
     # Add the title with center alignment
     ax.text(
         x=0.5, y=y, s=title, ha="center", fontsize=16, color="#86C8BC", weight="bold"
     )
     # Update the Y position for the next line
-    y -= 1 / (number_lines + 2)
+    y -= 0.15
 
     # Add each line of text
     for line in text_lines:
         ax.text(x=0.5, y=y, s=line, ha="center")
-        y -= 1 / (number_lines + 1)
+        y -= delta
+
+    plt.savefig(save_path, bbox_inches="tight")
+    plt.close(fig)
+
+
+def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) -> None:
+    """Create card as an image, containing only a title centered."""
+    # Create a new figure and axis
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
+
+    # Remove axis and ticks
+    ax.axis("off")
+
+    # Add the title with center alignment
+    ax.text(
+        x=0.5,
+        y=0.5,
+        s=title,
+        ha="center",
+        fontsize=font_size,
+        color="#86C8BC",
+        weight="bold",
+    )
 
     plt.savefig(save_path, bbox_inches="tight")
     plt.close(fig)

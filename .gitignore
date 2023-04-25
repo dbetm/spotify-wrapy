@@ -134,3 +134,4 @@ spotify_data/*.json
 # outputs
 output/**/*.png
 output/**/*.txt
+output/**/*.mp4
