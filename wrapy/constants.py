@@ -1,8 +1,6 @@
 DEFAULT_DATA_DIR = "spotify_data"
 DEFAULT_OUTPUT_PATH = "output"
 ASSETS_PATH = "assets"
-# Without copyright by Lesfm, downloaded from: pixabay.com
-AUDIO_FOR_VIDEO = f"{ASSETS_PATH}/audio/my-lofi-morning-music-ig-version-60.mp3"
 
 TOTAL_SECONDS_PER_DAY = 86400
 TOTAL_SECONDS_PER_HOUR = 3600
