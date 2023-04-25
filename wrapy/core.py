@@ -237,16 +237,13 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
     # Remove axis and ticks
     ax.axis("off")
 
-    # draw text lines on the card
-    # number_lines = len(text_lines)
-
     # Define the initial Y position and their delta
     y = 0.85
     delta = 0.10
 
     # Add the title with center alignment
     ax.text(
-        x=0.5, y=y, s=title, ha="center", fontsize=18, color="#86C8BC", weight="bold"
+        x=0.5, y=y, s=title, ha="center", fontsize=20, color="#86C8BC", weight="bold"
     )
     # Update the Y position for the next line
     y -= 0.15

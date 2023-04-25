@@ -9,7 +9,6 @@ import pandas as pd
 from tzlocal import get_localzone_name
 
 from wrapy.constants import (
-    AUDIO_FOR_VIDEO,
     DAYS_WEEK_MAP,
     DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
@@ -122,10 +121,10 @@ def validate_dates(start_date: date, end_date: date):
 def make_video(output_path_dir: str, text_stats: List[str]) -> None:
     # create card for intro
     intro_card_path = os.path.join(output_path_dir, "00_intro.png")
-    create_and_save_title_card("My Spotify Wrapy 2023'", intro_card_path, font_size=18)
+    create_and_save_title_card("My Spotify Wrapy 2023'", intro_card_path, font_size=20)
     # create card for stats
     stats_card_path = os.path.join(output_path_dir, "stats.png")
-    create_and_save_text_card("STATS", text_stats, stats_card_path)
+    create_and_save_text_card("Stats", text_stats, stats_card_path)
     # create card for credits
     credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
     create_and_save_title_card(f"Download from {REPO_URL}", credits_card_path)
@@ -139,8 +138,7 @@ def make_video(output_path_dir: str, text_stats: List[str]) -> None:
     image_paths.sort()
 
     VideoMaker(image_paths).make(
-        output_path=os.path.join(output_path_dir, "my_wrapy.mp4"),
-        audio_path=AUDIO_FOR_VIDEO,
+        output_path=os.path.join(output_path_dir, "my_wrapy.mp4")
     )
 
 
