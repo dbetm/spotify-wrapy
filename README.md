@@ -65,8 +65,8 @@ Note: If the previous command gives an error, you can try running:
 
 ## Create my charts and stats
 
-1) In the folder with your data, look for a file named something like `StreamingHistory0.json`.
-2) Copy that file and paste it into the `spotify_data/` folder inside the repository.
+1) In the folder with your data, look for the files named something like `StreamingHistory.json`. It could be only one, example: `StreamingHistory0.json`.
+2) Copy those files and paste them into the `spotify_data/` folder inside the repository.
 3) Activate the virtual environment, if you haven't done so already.
 ```bash
 source .venv/bin/activate

@@ -13,6 +13,8 @@ from wrapy.constants import (
     TOTAL_SECONDS_PER_MINUTE,
 )
 
+GREEN_BLUE_HEXA_COLOR = "#86C8BC"
+
 
 def __increase_key_group(groups: dict, group_name: str, key: str) -> dict:
     """Increase accumulator by given group name and key of that group."""
@@ -211,7 +213,7 @@ def create_simple_plot(
     plt.figure(figsize=(8, 8))
 
     # plot
-    plt.plot(x, y, color="#86C8BC", linewidth=3)
+    plt.plot(x, y, color=GREEN_BLUE_HEXA_COLOR, linewidth=3)
     plt.xticks(x)
     plt.grid(True, linewidth=1, alpha=0.4)
 
@@ -243,7 +245,13 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
 
     # Add the title with center alignment
     ax.text(
-        x=0.5, y=y, s=title, ha="center", fontsize=20, color="#86C8BC", weight="bold"
+        x=0.5,
+        y=y,
+        s=title,
+        ha="center",
+        fontsize=20,
+        color=GREEN_BLUE_HEXA_COLOR,
+        weight="bold",
     )
     # Update the Y position for the next line
     y -= 0.15
@@ -272,7 +280,7 @@ def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) 
         s=title,
         ha="center",
         fontsize=font_size,
-        color="#86C8BC",
+        color=GREEN_BLUE_HEXA_COLOR,
         weight="bold",
     )
 

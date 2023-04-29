@@ -66,10 +66,10 @@ Nota: Si el comando anterior da error, puedes ejecutar:
 
 ------------------------
 
-## Generar mis gráficas y stats
+## Generar mis gráficas y estadísticas
 
-1) Dentro de la carpeta con tus datos busca un archivo llamado algo como `StreamingHistory0.json`.
-2) Copia ese archivo y pegalo en la carpeta `spotify_data/` que está dentro del repositorio.
+1) Dentro de la carpeta con tus datos busca los archivos llamados algo como `StreamingHistory.json`. Podría ser solo uno, llamado: `StreamingHistory0.json`.
+2) Copia ese o esos archivos y pegalos en la carpeta `spotify_data/` que está dentro del repositorio.
 3) Activa el entorno virtual, si no lo has hecho.
 ```bash
 source .venv/bin/activate
