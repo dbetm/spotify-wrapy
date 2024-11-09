@@ -27,6 +27,7 @@ from wrapy.core import (
     create_simple_plot,
     generate_plays_to_x_map,
     get_average_plays_per_day,
+    get_period,
     get_top_songs,
 )
 from wrapy.custom_exceptions import ValidationError
@@ -118,10 +119,12 @@ def validate_dates(start_date: date, end_date: date):
     logger.info(f"start-date given: {start_date}, end-date given: {end_date}")
 
 
-def make_video(output_path_dir: str, text_stats: List[str]) -> None:
+def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None:
     # create card for intro
     intro_card_path = os.path.join(output_path_dir, "00_intro.png")
-    create_and_save_title_card("My Spotify Wrapy 2023'", intro_card_path, font_size=20)
+    create_and_save_title_card(
+        f"My Spotify Wrapy \n\n{period}", intro_card_path, font_size=20
+    )
     # create card for stats
     stats_card_path = os.path.join(output_path_dir, "stats.png")
     create_and_save_text_card("Stats", text_stats, stats_card_path)
@@ -224,7 +227,11 @@ def run(
 
     if create_video:
         logger.info("Generating video...")
-        make_video(output_path_dir=output_path_dir, text_stats=text_stats)
+        make_video(
+            output_path_dir=output_path_dir,
+            text_stats=text_stats,
+            period=get_period(data),
+        )
 
     logger.info(f"Done, checkout the folder: {output_path_dir}/")
 
@@ -253,7 +260,7 @@ if __name__ == "__main__":
         default="english",
         help="Language to use for the stats and plots",
     )
-    parser.add_argument("--video", action="store_true", help="enable generate a video")
+    parser.add_argument("--video", action="store_true", help="generate a video")
     args = parser.parse_args()
     timezone_name = args.tz
 

@@ -286,3 +286,11 @@ def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) 
 
     plt.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
+
+
+def get_period(data: pd.DataFrame) -> str:
+    """Get from data the minimum date and maximum dates as a period as formatted string."""
+    return (
+        f"{data['endTime'].min().strftime('%b/%Y')}"
+        f"  -  {data['endTime'].max().strftime('%b/%Y')}"
+    )
