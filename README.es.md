@@ -27,7 +27,8 @@ _Actualizado: 30 diciembre 2022_
 
 **Requerimientos a instalar**
 
-- [virtualenv](https://virtualenv.pypa.io/en/latest/)
+- Git
+- Python 3.8 o una versión mayor.
 
 **Descargar el repositorio**
 ```bash
@@ -40,19 +41,6 @@ git clone https://github.com/dbetm/spotify-wrapy.git
 cd spotify-wrapy
 ```
 
-**Crear entorno virtual**
-
-```bash
-virtualenv .venv --python=python3.8
-```
-
-**Activar el entorno virtual**
-
-```bash
-source .venv/bin/activate
-```
-
-Nota: En Windows podría ser un poco diferente ejecutar este comando.
 
 **Instalar bibliotecas necesarias de Python**
 
@@ -60,9 +48,7 @@ Nota: En Windows podría ser un poco diferente ejecutar este comando.
 make install
 ```
 
-Nota: Si el comando anterior da error, puedes ejecutar:
-- `source .venv/bin/activate`
-- `pip install -r requirements.txt`
+Nota: El comando anterior va a crear un entorno virtual de Python.
 
 ------------------------
 

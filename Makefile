@@ -1,15 +1,23 @@
+SHELL=/bin/bash
+
+
 install:
+	@[ ! -d .venv ] && python3 -m venv .venv ||:;
 	@( \
-		. .venv/bin/activate; \
-		pip install -r requirements.txt; \
+		source .venv/bin/activate || exit 1; \
+		pip install -r requirements.txt || exit 1; \
 	)
 
 
 dev-install:
+	@[ ! -d .venv ] && python3 -m venv .venv ||:;
 	@( \
-		. .venv/bin/activate; \
-		pip install -r requirements-dev.txt; \
+		source .venv/bin/activate || exit 1; \
+		pip install -r requirements-dev.txt || exit 1; \
 	)
+
+
+full-install: install dev-install
 
 
 format-preview:
