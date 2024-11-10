@@ -133,7 +133,9 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
     create_and_save_text_card("Stats", text_stats, stats_card_path)
     # create card for credits
     credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
-    create_and_save_title_card(f"Download from {REPO_URL}", credits_card_path)
+    create_and_save_title_card(
+        f"{locale.get_attr('download_from')}\n\n{REPO_URL}", credits_card_path
+    )
 
     image_paths = [
         os.path.join(output_path_dir, f)
