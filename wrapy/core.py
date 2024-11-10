@@ -83,6 +83,27 @@ def get_top_songs(
     return song_counts.head(k_top).to_dict()
 
 
+def get_top_songs_for_each_hour(
+    data: pd.DataFrame,
+    plays_per_hour: List[tuple],
+    k_top: int = 5,
+    timestamp_col: str = "endTime",
+    song_col: str = "trackName",
+) -> dict:
+    plays_per_hour.sort(key=lambda x: x[1], reverse=True)
+
+    top_hours = [hour for hour, _ in plays_per_hour[:k_top]]
+    top_songs_for_each_hour = dict()
+
+    for hour in top_hours:
+        data_by_hour = data[data[timestamp_col].dt.hour == hour]
+        top_song = data_by_hour[song_col].value_counts(ascending=False).index[0]
+
+        top_songs_for_each_hour[hour] = top_song
+
+    return top_songs_for_each_hour
+
+
 def calculate_human_total_play(data: pd.DataFrame, column_name="msPlayed") -> dict:
     total_ms = data[column_name].sum()
     ms_per_day = TOTAL_SECONDS_PER_DAY * 1000
@@ -99,6 +120,14 @@ def calculate_human_total_play(data: pd.DataFrame, column_name="msPlayed") -> di
     total_minutes = total_ms // ms_per_minute
 
     return {"days": total_days, "hours": total_hours, "minutes": total_minutes}
+
+
+def get_period(data: pd.DataFrame, column_name: str = "endTime") -> str:
+    """Get from data the minimum date and maximum dates as a period as formatted string."""
+    return (
+        f"{data[column_name].min().strftime('%b/%Y')}"
+        f"  -  {data[column_name].max().strftime('%b/%Y')}"
+    )
 
 
 def create_polar_graph(
@@ -286,11 +315,3 @@ def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) 
 
     plt.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
-
-
-def get_period(data: pd.DataFrame) -> str:
-    """Get from data the minimum date and maximum dates as a period as formatted string."""
-    return (
-        f"{data['endTime'].min().strftime('%b/%Y')}"
-        f"  -  {data['endTime'].max().strftime('%b/%Y')}"
-    )

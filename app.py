@@ -29,6 +29,7 @@ from wrapy.core import (
     get_average_plays_per_day,
     get_period,
     get_top_songs,
+    get_top_songs_for_each_hour,
 )
 from wrapy.custom_exceptions import ValidationError
 from wrapy.lang import EnLocale, EsLocale
@@ -84,15 +85,17 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str) -> list:
     different_artists_listened = compute_unique_values(data, column_name="artistName")
     different_songs_played = compute_unique_values(data, column_name="trackName")
 
+    is_plural = lambda unity: int(unity) > 1
+
     text_stats = [
         f"{locale.get_attr('total_play')}: {total_plays}",
         f"{locale.get_attr('song_skips')}: {total_song_skips}, {percentage_song_skips}",
         f"{locale.get_attr('avg_plays_per_day')}: {avg_plays_per_day}",
         (
             f"{locale.get_attr('total_play_listened')}:"
-            f" {played_days} {locale.get_attr('day', True)},"
-            f" {played_hours} {locale.get_attr('hour', True)},"
-            f" {played_minutes} {locale.get_attr('minute', True)}"
+            f" {played_days} {locale.get_attr('day', is_plural(played_days))},"
+            f" {played_hours} {locale.get_attr('hour', is_plural(played_hours))},"
+            f" {played_minutes} {locale.get_attr('minute', is_plural(played_minutes))}"
         ),
         f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
         f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
@@ -223,6 +226,20 @@ def run(
         save_path=output_path_dir + "/" + "plays_per_month.png",
     )
 
+    # top songs for each hour (from a top 5)
+    top_songs_for_top_hours = get_top_songs_for_each_hour(
+        data, plays_per_hour, 5, "endLocalTime"
+    )
+    top_songs_for_top_hours = dict(sorted(top_songs_for_top_hours.items()))
+    create_and_save_text_card(
+        locale.get_attr("top_songs_for_top_hours_card_title"),
+        [
+            f"{song} {locale.get_attr('at_time')} {hour}h"
+            for hour, song in top_songs_for_top_hours.items()
+        ],
+        os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+    )
+
     logger.info("Plots generated")
 
     if create_video:
@@ -230,7 +247,7 @@ def run(
         make_video(
             output_path_dir=output_path_dir,
             text_stats=text_stats,
-            period=get_period(data),
+            period=get_period(data, "endLocalTime"),
         )
 
     logger.info(f"Done, checkout the folder: {output_path_dir}/")
