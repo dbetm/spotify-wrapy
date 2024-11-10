@@ -22,3 +22,4 @@ class EsLocale(Locale):
             "Canciones top en las horas más escuchadas"
         )
         self._at_time = "a las"
+        self._download_from = "Genera el tuyo con:"

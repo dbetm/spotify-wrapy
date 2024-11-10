@@ -20,3 +20,4 @@ class EnLocale(Locale):
         self._top_songs_card_title = "Top songs listened to"
         self._top_songs_for_top_hours_card_title = "Top songs listened to for top hours"
         self._at_time = "at"
+        self._download_from = "Download it and generate your own from:"
