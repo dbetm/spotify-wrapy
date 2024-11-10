@@ -18,3 +18,7 @@ class EsLocale(Locale):
         self._plays_per_hour_plot_title = "Reproducciones por hora"
         self._plays_per_month_plot_title = "Reproducciones por mes"
         self._top_songs_card_title = "Canciones más escuchadas"
+        self._top_songs_for_top_hours_card_title = (
+            "Canciones top en las horas más escuchadas"
+        )
+        self._at_time = "a las"
