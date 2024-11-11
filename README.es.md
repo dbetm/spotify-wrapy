@@ -2,16 +2,26 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Genera tres gráficas para visualizar las reproducciones por día de la semana, hora y mes, y una card como imagen con las canciones más escuchadas. Además, algunos conteos simples como el tiempo total de reproducción en días, horas y minutos, total de reproducciones, canciones saltadas, número de artistas y canciones diferentes escuchadas. Opcionalmente permite crear un video.
+Disfruta de tu experiencia en Spotify generando un video personalizado que muestra tus estadísticas de reproducción. Este video incluye varios gráficos informativos:
+
+- Reproducciones por hora, mes y día de la semana: Visualiza tus hábitos de escucha a lo largo del día y tus patrones semanales y mensuales.
+- Canciones principales y horas pico de escucha: Descubre tus pistas favoritas y los momentos en que las escuchas con mayor frecuencia.
+
+Además, el video proporciona estadísticas detalladas, como:
+
+- Tiempo total de reproducción: Mostrado en días, horas y minutos.
+- Reproducciones totales: El número total de canciones que has escuchado.
+- Canciones omitidas: Pistas que has saltado durante la reproducción.
+- Artistas y canciones únicas: La diversidad de tus elecciones musicales.
 
 ![](assets/plays_per_hour.png)
 
 
 ## Descargar tus datos de Spotify
-_Actualizado: 30 diciembre 2022_
+_Actualizado: 10 noviembre 2024_
 
 - En la app de escritorio en el menú desplegable donde está tu foto de perfil selecciona la opción **Cuenta**.
-- En el menú de la izquierda selecciona **Configuración de privacidad**.
+- Elegir **Privacidad de la cuenta**.
 - En la sección de **Descargar tus datos** seleccionada la opción de **Datos de cuenta**.
 - Dar click en **Solicitar datos**.
 - En 5-10 días te envíarán los datos a tu correo (el asociado a tu cuenta de Spotify) algo como esto:
@@ -52,7 +62,7 @@ Nota: El comando anterior va a crear un entorno virtual de Python.
 
 ------------------------
 
-## Generar mis gráficas y estadísticas
+## Generar video de Spotify WraPy
 
 1) Dentro de la carpeta con tus datos busca los archivos llamados algo como `StreamingHistory.json`. Podría ser solo uno, llamado: `StreamingHistory0.json`.
 2) Copia ese o esos archivos y pegalos en la carpeta `spotify_data/` que está dentro del repositorio.
@@ -70,9 +80,9 @@ Alternativamente puedes pasar la fecha de inicio y final para delimitar los dato
 ```bash
 python3 app.py --lang spanish --start-date 2022-01-13 --end-date 2023-01-01
 ```
-Y también puedes generar un video, pasándo la opción `video`.
+Y si no deseas generar el video:
 ```bash
-python3 app.py --lang english --video
+python3 app.py --lang spanish --no-video
 ```
 5) Los resultados se guardarán dentro de una carpeta (con nombre según la fecha y hora de ejecución) que estará dentro de la carpeta [output](output/).
 

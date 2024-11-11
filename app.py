@@ -154,7 +154,7 @@ def run(
     local_timezone: str,
     start_date: date = None,
     end_date: date = None,
-    create_video: bool = False,
+    create_video: bool = True,
 ):
     data = load_streaming_history_data()
 
@@ -279,7 +279,7 @@ if __name__ == "__main__":
         default="english",
         help="Language to use for the stats and plots",
     )
-    parser.add_argument("--video", action="store_true", help="generate a video")
+    parser.add_argument("--no-video", action="store_false", help="no generate video")
     args = parser.parse_args()
     timezone_name = args.tz
 
@@ -298,5 +298,5 @@ if __name__ == "__main__":
         local_timezone=timezone_name,
         start_date=args.start_date,
         end_date=args.end_date,
-        create_video=args.video,
+        create_video=args.no_video,
     )
