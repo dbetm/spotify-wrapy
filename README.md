@@ -2,16 +2,26 @@
 
 [English](README.md) / [Español](README.es.md)
 
-Create three charts to visualize playbacks by day of the week, hour, and month, one card as image with the top songs listented to. Plus, get some simple counts like total play time in days, hours, and minutes, total playbacks, skipped songs, and the number of different artists and songs you've listened to. Optionally you can generate a video.
+Enjoy your Spotify experience by generating a personalized video showcasing your streaming statistics. This video includes several insightful charts:
+
+- Plays per Hour, Month and Weekday: Visualize your listening habits throughout the day and your weekly and monthly listening patterns.
+- Top Songs and Peak Listening Hours: Discover your favorite tracks and when you listen to them most.
+
+Additionally, the video provides comprehensive statistics, such as:
+
+- Total Play Time: Displayed in days, hours, and minutes.
+- Total Playbacks: The overall number of songs you've played.
+- Skipped Songs: Tracks you've skipped during playback.
+- Unique Artists and Songs: The diversity of your listening choices.
 
 ![](assets/plays_per_month.png)
 
 
 ## Download your data from Spotify
-_Updated: December 30th 2022_
+_Updated: November 10th 2024_
 
 - In the desktop app, go to the dropdown menu where your profile picture is and select the **Account** option.
-- In the left-hand menu, choose **Privacy settings**.
+- Choose **Account privacy**.
 - In the **Download your data** section, pick the **Account data** option.
 - Click on **Request data**.
 - In 5-10 days, they'll send the data to your email (the one linked to your Spotify account).
@@ -48,7 +58,7 @@ Note: This will create a python virtual environment.
 
 ------------------------
 
-## Create my charts and stats
+## Create my Spotify WraPy video
 
 1) In the folder with your data, look for the files named something like `StreamingHistory.json`. It could be only one, example: `StreamingHistory0.json`.
 2) Copy those files and paste them into the `spotify_data/` folder inside the repository.
@@ -66,9 +76,9 @@ Alternatively, you can pass a start and end date to limit the data used, for exa
 ```bash
 python3 app.py --lang english --start-date 2022-01-13 --end-date 2023-01-01
 ```
-And you can generate a video, passing the `video` flag:
+If you don't want to generate a video:
 ```bash
-python3 app.py --lang english --video
+python3 app.py --lang english --no-video
 ```
 5) The results will be saved in a folder (named according to the datetime of execution) inside the [output](output/) folder.
 
