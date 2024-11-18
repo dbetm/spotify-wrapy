@@ -155,6 +155,7 @@ def create_polar_graph(
     plot_title: str,
     label_map_fn: Callable = lambda x: x,
     save_path: Optional[str] = None,
+    title_font_size: int = 14,
 ):
     labels = list()
     values = list()
@@ -207,7 +208,13 @@ def create_polar_graph(
         )
 
     # Set the title and the font size
-    plt.title(label=plot_title, fontsize=14, pad=20)
+    plt.title(
+        label=plot_title,
+        fontsize=title_font_size,
+        pad=20,
+        color=GREEN_BLUE_HEXA_COLOR,
+        weight="bold",
+    )
 
     plt.tight_layout()
 
@@ -224,6 +231,7 @@ def create_bar_graph(
     plot_title: str,
     x_label: str,
     save_path: Optional[str] = None,
+    title_font_size: int = 14,
 ):
     max_value = max(y)
 
@@ -239,7 +247,13 @@ def create_bar_graph(
     ax.bar(x=x, height=y, tick_label=x, color=color_map(list(np.array(y) / max_value)))
 
     # add title and labels
-    plt.title(label=plot_title, fontsize=14, pad=20)
+    plt.title(
+        label=plot_title,
+        fontsize=title_font_size,
+        pad=20,
+        color=GREEN_BLUE_HEXA_COLOR,
+        weight="bold",
+    )
     ax.set_xlabel(xlabel=x_label)
     ax.set_ylabel(ylabel="Plays")
 
@@ -256,7 +270,9 @@ def create_simple_plot(
     y: List[int],
     plot_title: str,
     x_label: str,
+    y_label: str = "plays",
     save_path: Optional[str] = None,
+    title_font_size: int = 14,
 ):
     # Set the figure size
     plt.figure(figsize=(8, 8))
@@ -267,9 +283,15 @@ def create_simple_plot(
     plt.grid(True, linewidth=1, alpha=0.4)
 
     # title and labels
-    plt.title(label=plot_title, fontsize=14, pad=20)
+    plt.title(
+        label=plot_title,
+        fontsize=title_font_size,
+        pad=20,
+        color=GREEN_BLUE_HEXA_COLOR,
+        weight="bold",
+    )
     plt.xlabel(xlabel=x_label)
-    plt.ylabel(ylabel="plays")
+    plt.ylabel(ylabel=y_label)
 
     plt.tight_layout()
 
@@ -279,9 +301,20 @@ def create_simple_plot(
         plt.show()
 
 
-def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> None:
+def create_and_save_text_card(
+    title: str,
+    text_lines: str,
+    img_size: tuple,
+    save_path: str,
+    title_font_size: int = 20,
+    content_font_size: int = 14,
+) -> None:
+    dots_per_inch = 200
+    width = img_size[1] / 100  # Divide by DPI to get size in inches
+    height = img_size[0] / 100  # Divide by DPI to get size in inches
+
     # Create a new figure and axis
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
+    fig, ax = plt.subplots(figsize=(width, height), dpi=dots_per_inch)
 
     assert len(text_lines) < 10, "text_lines must be contains less than 10 strings"
 
@@ -298,7 +331,7 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
         y=y,
         s=title,
         ha="center",
-        fontsize=20,
+        fontsize=title_font_size,
         color=GREEN_BLUE_HEXA_COLOR,
         weight="bold",
     )
@@ -307,17 +340,26 @@ def create_and_save_text_card(title: str, text_lines: str, save_path: str) -> No
 
     # Add each line of text
     for line in text_lines:
-        ax.text(x=0.5, y=y, s=line, ha="center", fontsize=14)
+        ax.text(x=0.5, y=y, s=line, ha="center", fontsize=content_font_size)
         y -= delta
 
     plt.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
 
 
-def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) -> None:
+def create_and_save_title_card(
+    title: str,
+    save_path: str,
+    img_size: tuple,
+    font_size: int = 16,
+) -> None:
     """Create card as an image, containing only a title centered."""
+    dots_per_inch = 200
+    width = img_size[1] / 100  # Divide by DPI to get size in inches
+    height = img_size[0] / 100  # Divide by DPI to get size in inches
+
     # Create a new figure and axis
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
+    fig, ax = plt.subplots(figsize=(width, height), dpi=dots_per_inch)
 
     # Remove axis and ticks
     ax.axis("off")
@@ -396,6 +438,6 @@ def generate_n_star_viz(
     # Put text title
     font = ImageFont.load_default(size=50)
     # Step 5: Draw the text on the image
-    draw.text((100, 100), title, fill=GREEN_BLUE_HEXA_COLOR, font=font)
+    draw.text((100, 200), title, fill=GREEN_BLUE_HEXA_COLOR, font=font)
 
     image.save(save_path)
