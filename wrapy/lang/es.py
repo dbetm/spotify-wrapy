@@ -17,6 +17,7 @@ class EsLocale(Locale):
         self._plays_per_weekday_plot_title = "Reproducciones por día de la semana"
         self._plays_per_hour_plot_title = "Reproducciones por hora"
         self._plays_per_month_plot_title = "Reproducciones por mes"
+        self._top_artists_card_title = "Artistas y/o bandas más escuchadas"
         self._top_songs_card_title = "Canciones más escuchadas"
         self._top_songs_for_top_hours_card_title = (
             "Canciones top en las horas más escuchadas"
@@ -26,3 +27,4 @@ class EsLocale(Locale):
         self._artists_color_coded_from_top_songs = (
             "Top {K} canciones: artistas por colores"
         )
+        self._play = "reproducciones"

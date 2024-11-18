@@ -10,8 +10,8 @@ class VideoMaker:
         self.images = [
             self.__prepare_image(cv2.imread(img), image_size) for img in image_filepaths
         ]
-        self.image_duration = 3.5  # in seconds
-        self.transition_duration = 0.5  # in seconds
+        self.image_duration = 3.5  # seconds
+        self.transition_duration = 0.5  # seconds
         self.fps = 30
 
     def __prepare_image(self, img: np.ndarray, dims: tuple) -> np.ndarray:

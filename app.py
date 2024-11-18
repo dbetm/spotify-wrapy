@@ -30,6 +30,7 @@ from wrapy.core import (
     generate_plays_to_x_map,
     get_average_plays_per_day,
     get_period,
+    get_top_artists,
     get_top_songs,
     get_top_songs_for_each_hour,
 )
@@ -136,7 +137,7 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
     # create card for credits
     credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
     create_and_save_title_card(
-        f"{locale.get_attr('download_from')}\n\n{REPO_URL}", credits_card_path
+        f"{locale.get_attr('download_from')}\n\n{REPO_URL}\n\n\n+)", credits_card_path
     )
 
     image_paths = [
@@ -198,7 +199,7 @@ def run(
     create_and_save_text_card(
         locale.get_attr("top_songs_card_title"),
         [
-            f"{song['trackName'][:35]} -- {song['artistName'][:35]}: {song['plays']}"
+            f"{song['trackName'][:35]} - {song['artistName'][:35]}: {song['plays']}"
             for song in top_5_songs
         ],
         os.path.join(output_path_dir, "top_songs.png"),
@@ -216,6 +217,17 @@ def run(
             for hour, song in top_songs_for_top_hours.items()
         ],
         os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+    )
+
+    # top artists
+    top_artists = get_top_artists(data, 5)
+    create_and_save_text_card(
+        locale.get_attr("top_artists_card_title"),
+        [
+            f"{artist}: {plays} {locale.get_attr('play')}"
+            for artist, plays in top_artists.items()
+        ],
+        os.path.join(output_path_dir, "top_artists.png"),
     )
 
     logger.info("Text cards generated")
