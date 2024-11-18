@@ -96,6 +96,13 @@ def get_top_songs(
     return df.reset_index().drop(columns=[song_id_key])
 
 
+def get_top_artists(
+    data: pd.DataFrame, k_top: int = 5, artist_column: str = "artistName"
+) -> pd.DataFrame:
+    """Get the most listened artists."""
+    return data[artist_column].value_counts(ascending=False).head(k_top)
+
+
 def get_top_songs_for_each_hour(
     data: pd.DataFrame,
     plays_per_hour: List[tuple],
