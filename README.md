@@ -5,16 +5,18 @@
 Enjoy your Spotify experience by generating a personalized video showcasing your streaming statistics. This video includes several insightful charts:
 
 - Plays per Hour, Month and Weekday: Visualize your listening habits throughout the day and your weekly and monthly listening patterns.
-- Top Songs and Peak Listening Hours: Discover your favorite tracks and when you listen to them most.
+- Top Songs, top artists and Peak Listening Hours: Discover your favorite tracks and when you listen to them most.
 
 Additionally, the video provides comprehensive statistics, such as:
 
 - Total Play Time: Displayed in days, hours, and minutes.
 - Total Playbacks: The overall number of songs you've played.
 - Skipped Songs: Tracks you've skipped during playback.
-- Unique Artists and Songs: The diversity of your listening choices.
+- Number of unique Artists and Songs: The diversity of your listening choices.
 
 ![](assets/plays_per_month.png)
+
+[Video example](https://youtube.com/shorts/oalWYvvdk-M?feature=share)
 
 
 ## Download your data from Spotify
