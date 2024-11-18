@@ -5,7 +5,7 @@
 Disfruta de tu experiencia en Spotify generando un video personalizado que muestra tus estadísticas de reproducción. Este video incluye varios gráficos informativos:
 
 - Reproducciones por hora, mes y día de la semana: Visualiza tus hábitos de escucha a lo largo del día y tus patrones semanales y mensuales.
-- Canciones principales y horas pico de escucha: Descubre tus pistas favoritas y los momentos en que las escuchas con mayor frecuencia.
+- Canciones y artistas principales y horas pico de escucha: Descubre tus pistas favoritas y los momentos en que las escuchas con mayor frecuencia.
 
 Además, el video proporciona estadísticas detalladas, como:
 
@@ -15,6 +15,8 @@ Además, el video proporciona estadísticas detalladas, como:
 - Artistas y canciones únicas: La diversidad de tus elecciones musicales.
 
 ![](assets/plays_per_hour.png)
+
+[Video de ejemplo](https://youtube.com/shorts/oalWYvvdk-M?feature=share)
 
 
 ## Descargar tus datos de Spotify
