@@ -133,6 +133,7 @@ spotify_data/*.json
 
 # Misc
 .DS_Store
+exp.ipynb
 
 # outputs
 output/**/*.png

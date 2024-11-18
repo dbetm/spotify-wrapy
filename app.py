@@ -13,6 +13,7 @@ from wrapy.constants import (
     DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
     END_LOCAL_TIME_COL_NAME,
+    K_TOP_SONGS,
     LIMIT_DATE_FORMAT,
     REPO_URL,
 )
@@ -25,6 +26,7 @@ from wrapy.core import (
     create_bar_graph,
     create_polar_graph,
     create_simple_plot,
+    generate_n_star_viz,
     generate_plays_to_x_map,
     get_average_plays_per_day,
     get_period,
@@ -182,20 +184,43 @@ def run(
     text_stats = generate_and_save_stats(data, output_path_dir + "/" + "stats.txt")
     logger.info("Stats generated")
 
-    # Plots
+    # Text cards
     plays_per_groups = generate_plays_to_x_map(
         data=data,
         target_names={"hour", "month", "weekday"},
         column_name=END_LOCAL_TIME_COL_NAME,
     )
+    plays_per_hour = plays_per_groups["hour"]
 
     # top songs
-    top_songs = get_top_songs(data)
+    top_songs = get_top_songs(data, k_top=K_TOP_SONGS)
+    top_5_songs = top_songs.head(5).to_dict(orient="records")
     create_and_save_text_card(
         locale.get_attr("top_songs_card_title"),
-        [f"{song}: {times}" for song, times in top_songs.items()],
+        [
+            f"{song['trackName'][:35]} -- {song['artistName'][:35]}: {song['plays']}"
+            for song in top_5_songs
+        ],
         os.path.join(output_path_dir, "top_songs.png"),
     )
+
+    # top songs for each hour (from a top 5)
+    top_songs_for_top_hours = get_top_songs_for_each_hour(
+        data, plays_per_hour, 5, "endLocalTime"
+    )
+    top_songs_for_top_hours = dict(sorted(top_songs_for_top_hours.items()))
+    create_and_save_text_card(
+        locale.get_attr("top_songs_for_top_hours_card_title"),
+        [
+            f"{song} {locale.get_attr('at_time')} {hour}h"
+            for hour, song in top_songs_for_top_hours.items()
+        ],
+        os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+    )
+
+    logger.info("Text cards generated")
+
+    # Plots
 
     # accumulated plays per day of the week
     plays_per_weekday = plays_per_groups["weekday"]
@@ -208,7 +233,6 @@ def run(
         save_path=output_path_dir + "/" + "plays_per_weekday.png",
     )
     # accumulated plays per hour
-    plays_per_hour = plays_per_groups["hour"]
     x_hours, y_hour_values = separate_di_tuples_in_two_lists(plays_per_hour)
     create_bar_graph(
         x=x_hours,
@@ -228,18 +252,15 @@ def run(
         save_path=output_path_dir + "/" + "plays_per_month.png",
     )
 
-    # top songs for each hour (from a top 5)
-    top_songs_for_top_hours = get_top_songs_for_each_hour(
-        data, plays_per_hour, 5, "endLocalTime"
-    )
-    top_songs_for_top_hours = dict(sorted(top_songs_for_top_hours.items()))
-    create_and_save_text_card(
-        locale.get_attr("top_songs_for_top_hours_card_title"),
-        [
-            f"{song} {locale.get_attr('at_time')} {hour}h"
-            for hour, song in top_songs_for_top_hours.items()
-        ],
-        os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+    generate_n_star_viz(
+        top_songs,
+        img_size=(1080, 1920),
+        title=locale.get_attr("artists_color_coded_from_top_songs").format(
+            K=K_TOP_SONGS
+        ),
+        save_path=output_path_dir
+        + "/"
+        + "star_with_artists_color_coded_from_top_songs.png",
     )
 
     logger.info("Plots generated")

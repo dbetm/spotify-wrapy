@@ -1,9 +1,12 @@
+import math
+import random
 from typing import Callable, List, Optional, Set, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib import cm
+from PIL import Image, ImageDraw, ImageFont
 
 from wrapy.constants import (
     ALLOWED_X_TARGETS,
@@ -75,12 +78,22 @@ def get_average_plays_per_day(data: pd.DataFrame, ms_tolerance: int = 10_000) ->
 
 
 def get_top_songs(
-    data: pd.DataFrame, k_top: int = 5, column_name: str = "trackName"
-) -> dict:
+    data: pd.DataFrame,
+    k_top: int = 5,
+    song_column: str = "trackName",
+    artist_column: str = "artistName",
+) -> pd.DataFrame:
     """Get the most listened songs."""
-    song_counts = data[column_name].value_counts(ascending=False)
+    song_id_key = "song_id"
+    data[song_id_key] = data[song_column] + "#&&6" + data[artist_column]
+    song_counts = data[song_id_key].value_counts(ascending=False).head(k_top)
 
-    return song_counts.head(k_top).to_dict()
+    df = song_counts.index.to_series().str.extract(r"^(.*?)#&&6(.*)$")
+    df.columns = [song_column, artist_column]
+
+    df["plays"] = song_counts.values
+
+    return df.reset_index().drop(columns=[song_id_key])
 
 
 def get_top_songs_for_each_hour(
@@ -315,3 +328,67 @@ def create_and_save_title_card(title: str, save_path: str, font_size: int = 16) 
 
     plt.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
+
+
+def generate_n_star_viz(
+    data: pd.DataFrame, img_size: tuple, title: str, save_path: str
+) -> None:
+    """Create an image with an n star color coded from the artists
+    from the tops songs listened to. The number of spikes is equal to the number of records.
+    """
+    n = data.shape[0]
+    color_padding = 15
+    img_padding = 5
+    random.seed(42)
+
+    def get_random_color():
+        return tuple(
+            random.randint(0 + color_padding, 255 - color_padding) for _ in range(3)
+        )
+
+    colors_map = dict()
+    colors = list()
+
+    for _, row in data.iterrows():
+        if row["artistName"] in colors_map:
+            colors.append(colors_map[row["artistName"]])
+        else:
+            new_color = get_random_color()
+            colors_map[row["artistName"]] = new_color
+            colors.append(new_color)
+
+    width, height = img_size
+    center = ((width - img_padding) // 2, (height - img_padding) // 2)
+    radius_outer = min(center) - 20  # Outer radius
+    radius_inner = (radius_outer // 2) - 35  # Inner radius
+
+    angle_step = 360 / n  # Degrees between points
+
+    # Create a base image with a black background
+    image = Image.new("RGB", img_size, "black")
+    draw = ImageDraw.Draw(image)
+
+    points = []
+    for i in range(n * 2):
+        angle_deg = angle_step * (i / 2)
+        angle_rad = (angle_deg / 180) * np.pi
+        radius = radius_outer if i % 2 == 0 else radius_inner
+        x = int(center[0] + radius * math.cos(angle_rad))
+        y = int(center[1] + radius * math.sin(angle_rad))
+        points.append((x, y))
+
+    # Draw each spike with random colors
+    for i in range(len(points)):
+        spike_color = colors[(i + 1) // 2 % len(colors)]
+        draw.polygon(
+            [center, points[i], points[(i + 1) % len(points)]],
+            fill=spike_color,
+            outline=None,
+        )
+
+    # Put text title
+    font = ImageFont.load_default(size=50)
+    # Step 5: Draw the text on the image
+    draw.text((100, 100), title, fill=GREEN_BLUE_HEXA_COLOR, font=font)
+
+    image.save(save_path)
