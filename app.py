@@ -9,6 +9,7 @@ import pandas as pd
 from tzlocal import get_localzone_name
 
 from wrapy.constants import (
+    CARD_IMG_SIZE,
     DAYS_WEEK_MAP,
     DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
@@ -16,6 +17,7 @@ from wrapy.constants import (
     K_TOP_SONGS,
     LIMIT_DATE_FORMAT,
     REPO_URL,
+    VIDEO_DIMENSIONS,
 )
 from wrapy.core import (
     calculate_human_total_play,
@@ -94,6 +96,7 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str) -> list:
         f"{locale.get_attr('total_play')}: {total_plays}",
         f"{locale.get_attr('song_skips')}: {total_song_skips}, {percentage_song_skips}",
         f"{locale.get_attr('avg_plays_per_day')}: {avg_plays_per_day}",
+        f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
         (
             f"{locale.get_attr('total_play_listened')}:"
             f" {played_days} {locale.get_attr('day', is_plural(played_days))},"
@@ -101,7 +104,6 @@ def generate_and_save_stats(data: pd.DataFrame, output_path: str) -> list:
             f" {played_minutes} {locale.get_attr('minute', is_plural(played_minutes))}"
         ),
         f"{locale.get_attr('different_artists_listened')}: {different_artists_listened}",
-        f"{locale.get_attr('different_songs_listened')}: {different_songs_played}",
         f"{locale.get_attr('time_period')}: {time_period}",
     ]
 
@@ -129,15 +131,25 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
     # create card for intro
     intro_card_path = os.path.join(output_path_dir, "00_intro.png")
     create_and_save_title_card(
-        f"My Spotify Wrapy \n\n{period}", intro_card_path, font_size=20
+        f"My Spotify Wrapy \n\n{period}", intro_card_path, CARD_IMG_SIZE, font_size=30
     )
     # create card for stats
     stats_card_path = os.path.join(output_path_dir, "stats.png")
-    create_and_save_text_card("Stats", text_stats, stats_card_path)
+    create_and_save_text_card(
+        "Stats",
+        text_stats,
+        CARD_IMG_SIZE,
+        stats_card_path,
+        title_font_size=30,
+        content_font_size=18,
+    )
     # create card for credits
     credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
     create_and_save_title_card(
-        f"{locale.get_attr('download_from')}\n\n{REPO_URL}\n\n\n+)", credits_card_path
+        f"{locale.get_attr('download_from')}\n\n{REPO_URL}\n\n\n+)",
+        credits_card_path,
+        CARD_IMG_SIZE,
+        font_size=20,
     )
 
     image_paths = [
@@ -148,7 +160,7 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
 
     image_paths.sort()
 
-    VideoMaker(image_paths).make(
+    VideoMaker(image_paths, VIDEO_DIMENSIONS).make(
         output_path=os.path.join(output_path_dir, "my_wrapy.mp4")
     )
 
@@ -202,7 +214,10 @@ def run(
             f"{song['trackName'][:35]} - {song['artistName'][:35]}: {song['plays']}"
             for song in top_5_songs
         ],
+        CARD_IMG_SIZE,
         os.path.join(output_path_dir, "top_songs.png"),
+        title_font_size=25,
+        content_font_size=18,
     )
 
     # top songs for each hour (from a top 5)
@@ -216,7 +231,9 @@ def run(
             f"{song} {locale.get_attr('at_time')} {hour}h"
             for hour, song in top_songs_for_top_hours.items()
         ],
+        CARD_IMG_SIZE,
         os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+        content_font_size=16,
     )
 
     # top artists
@@ -227,7 +244,10 @@ def run(
             f"{artist}: {plays} {locale.get_attr('play')}"
             for artist, plays in top_artists.items()
         ],
+        CARD_IMG_SIZE,
         os.path.join(output_path_dir, "top_artists.png"),
+        title_font_size=23,
+        content_font_size=20,
     )
 
     logger.info("Text cards generated")
@@ -243,6 +263,7 @@ def run(
         plot_title=locale.get_attr("plays_per_weekday_plot_title"),
         label_map_fn=partial(map_int_day_to_weekday_name, days_week_map),
         save_path=output_path_dir + "/" + "plays_per_weekday.png",
+        title_font_size=20,
     )
     # accumulated plays per hour
     x_hours, y_hour_values = separate_di_tuples_in_two_lists(plays_per_hour)
@@ -252,6 +273,7 @@ def run(
         plot_title=locale.get_attr("plays_per_hour_plot_title"),
         x_label=locale.get_attr("hour"),
         save_path=output_path_dir + "/" + "plays_per_hour.png",
+        title_font_size=20,
     )
     # accumulated plays per month - simple plot
     plays_per_month = plays_per_groups["month"]
@@ -262,11 +284,12 @@ def run(
         plot_title=locale.get_attr("plays_per_month_plot_title"),
         x_label=locale.get_attr("month"),
         save_path=output_path_dir + "/" + "plays_per_month.png",
+        title_font_size=20,
     )
 
     generate_n_star_viz(
         top_songs,
-        img_size=(1080, 1920),
+        img_size=CARD_IMG_SIZE[::-1],
         title=locale.get_attr("artists_color_coded_from_top_songs").format(
             K=K_TOP_SONGS
         ),

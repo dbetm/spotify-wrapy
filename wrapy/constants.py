@@ -34,3 +34,12 @@ ALLOWED_X_TARGETS = {"month", "weekday", "hour"}
 END_LOCAL_TIME_COL_NAME = "endLocalTime"
 
 REPO_URL = "https://github.com/dbetm/spotify-wrapy"
+
+# Video generation
+VIDEO_DIMENSIONS = (1920, 1080)
+IMAGE_DURATION_SECS = 3.65
+FPS = 30
+TRANSTITION_DURATION_SECS = 0.6
+
+# Text cards
+CARD_IMG_SIZE = VIDEO_DIMENSIONS

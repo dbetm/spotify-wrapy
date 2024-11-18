@@ -4,15 +4,14 @@ import cv2
 import numpy as np
 from moviepy.editor import AudioFileClip, ImageClip, concatenate_videoclips
 
+from wrapy.constants import FPS, IMAGE_DURATION_SECS, TRANSTITION_DURATION_SECS
+
 
 class VideoMaker:
-    def __init__(self, image_filepaths: List[str], image_size: tuple = (1200, 1200)):
+    def __init__(self, image_filepaths: List[str], image_size: tuple):
         self.images = [
             self.__prepare_image(cv2.imread(img), image_size) for img in image_filepaths
         ]
-        self.image_duration = 3.5  # seconds
-        self.transition_duration = 0.5  # seconds
-        self.fps = 30
 
     def __prepare_image(self, img: np.ndarray, dims: tuple) -> np.ndarray:
         """Resize the image to the target dims maintaining their aspect ratio and then
@@ -53,13 +52,13 @@ class VideoMaker:
             prev_img = self.images[i]
             next_img = self.images[i + 1]
 
-            clip = ImageClip(prev_img).set_duration(self.image_duration)
+            clip = ImageClip(prev_img).set_duration(IMAGE_DURATION_SECS)
             transition = self.__create_transition(prev_img, next_img)
 
             clips.extend([clip, transition])
 
         # add the last image without transition
-        clips.append(ImageClip(self.images[-1]).set_duration(self.image_duration))
+        clips.append(ImageClip(self.images[-1]).set_duration(IMAGE_DURATION_SECS))
         video = concatenate_videoclips(clips)
 
         # add audio, cut to the video duration
@@ -68,15 +67,15 @@ class VideoMaker:
             video = video.set_audio(audio.set_duration(video.duration))
 
         # save video
-        video.write_videofile(output_path, fps=self.fps)
+        video.write_videofile(output_path, fps=FPS)
 
     def __create_transition(self, prev_img: np.ndarray, next_img: np.ndarray):
-        transition_frames = int(self.transition_duration * self.fps)
+        transition_frames = int(TRANSTITION_DURATION_SECS * FPS)
         transition_video = []
 
         for i in range(transition_frames):
             alpha = i / transition_frames
             frame = cv2.addWeighted(prev_img, 1 - alpha, next_img, alpha, 0)
-            transition_video.append(ImageClip(frame).set_duration(1 / self.fps))
+            transition_video.append(ImageClip(frame).set_duration(1 / FPS))
 
         return concatenate_videoclips(transition_video)

@@ -25,6 +25,6 @@ class EsLocale(Locale):
         self._at_time = "a las"
         self._download_from = "Genera el tuyo con:"
         self._artists_color_coded_from_top_songs = (
-            "Top {K} canciones: artistas por colores"
+            "Artistas como colores: Top {K} canciones"
         )
         self._play = "reproducciones"
