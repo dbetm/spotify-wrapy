@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # JSON Spotify data
-spotify_data/*.json
+spotify_data/**/*.json
 
 # Misc
 .DS_Store
