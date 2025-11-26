@@ -1,3 +1,5 @@
+import os
+
 DEFAULT_DATA_DIR = "spotify_data"
 DEFAULT_OUTPUT_PATH = "output"
 ASSETS_PATH = "assets"
@@ -43,3 +45,4 @@ TRANSTITION_DURATION_SECS = 0.6
 
 # Text cards
 CARD_IMG_SIZE = VIDEO_DIMENSIONS
+COVER_BG_IMAGE_PATH = os.path.join(ASSETS_PATH, "earth-from-iss-for-cover.png")

@@ -17,6 +17,7 @@ from wrapy.constants import (
 )
 
 GREEN_BLUE_HEXA_COLOR = "#86C8BC"
+WHITE_COLOR = "#ffffff"
 
 
 def __increase_key_group(groups: dict, group_name: str, key: str) -> dict:
@@ -109,7 +110,10 @@ def get_top_songs_for_each_hour(
     k_top: int = 5,
     timestamp_col: str = "endTime",
     song_col: str = "trackName",
+    artist_column: str = "artistName",
+    join_word: str = "",
 ) -> dict:
+    """Return a dictionary mapping top hour with top song + artist"""
     plays_per_hour.sort(key=lambda x: x[1], reverse=True)
 
     top_hours = [hour for hour, _ in plays_per_hour[:k_top]]
@@ -118,8 +122,9 @@ def get_top_songs_for_each_hour(
     for hour in top_hours:
         data_by_hour = data[data[timestamp_col].dt.hour == hour]
         top_song = data_by_hour[song_col].value_counts(ascending=False).index[0]
+        artist = data[data[song_col] == top_song].iloc[0].to_dict()[artist_column]
 
-        top_songs_for_each_hour[hour] = top_song
+        top_songs_for_each_hour[hour] = f"{top_song} {join_word} {artist}"
 
     return top_songs_for_each_hour
 
@@ -352,17 +357,25 @@ def create_and_save_title_card(
     save_path: str,
     img_size: tuple,
     font_size: int = 16,
+    background_img: Optional[Image.Image] = None,
 ) -> None:
     """Create card as an image, containing only a title centered."""
-    dots_per_inch = 200
-    width = img_size[1] / 100  # Divide by DPI to get size in inches
-    height = img_size[0] / 100  # Divide by DPI to get size in inches
+    dots_per_inch = 100
+    width = img_size[1] / dots_per_inch  # Divide by DPI to get size in inches
+    height = img_size[0] / dots_per_inch  # Divide by DPI to get size in inches
 
     # Create a new figure and axis
     fig, ax = plt.subplots(figsize=(width, height), dpi=dots_per_inch)
+    # remove internal margins / borders
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     # Remove axis and ticks
     ax.axis("off")
+
+    if background_img is not None:
+        bg = background_img.resize((img_size[1], img_size[0]))
+        # [xmin, xmax, ymin, ymax] / 0 is the left botton border and 1 is right/upper
+        ax.imshow(bg, extent=[0, 1, 0, 1], aspect="auto")
 
     # Add the title with center alignment
     ax.text(
@@ -371,11 +384,11 @@ def create_and_save_title_card(
         s=title,
         ha="center",
         fontsize=font_size,
-        color=GREEN_BLUE_HEXA_COLOR,
+        color=WHITE_COLOR,
         weight="bold",
     )
 
-    plt.savefig(save_path, bbox_inches="tight")
+    plt.savefig(save_path, dpi=dots_per_inch)
     plt.close(fig)
 
 

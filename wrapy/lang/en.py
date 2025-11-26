@@ -26,3 +26,4 @@ class EnLocale(Locale):
             "Artists color coded from top {K} songs"
         )
         self._play = "plays"
+        self._by = "by"
