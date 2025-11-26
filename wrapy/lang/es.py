@@ -28,3 +28,4 @@ class EsLocale(Locale):
             "Artistas como colores: Top {K} canciones"
         )
         self._play = "reproducciones"
+        self._by = "de"

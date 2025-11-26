@@ -6,10 +6,12 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from PIL import Image
 from tzlocal import get_localzone_name
 
 from wrapy.constants import (
     CARD_IMG_SIZE,
+    COVER_BG_IMAGE_PATH,
     DAYS_WEEK_MAP,
     DAYS_WEEK_MAP_EN,
     DEFAULT_OUTPUT_PATH,
@@ -131,7 +133,11 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
     # create card for intro
     intro_card_path = os.path.join(output_path_dir, "00_intro.png")
     create_and_save_title_card(
-        f"My Spotify Wrapy \n\n{period}", intro_card_path, CARD_IMG_SIZE, font_size=30
+        f"My Spotify Wrapy \n\n{period}",
+        intro_card_path,
+        CARD_IMG_SIZE,
+        font_size=30,
+        background_img=Image.open(COVER_BG_IMAGE_PATH).convert("RGB"),
     )
     # create card for stats
     stats_card_path = os.path.join(output_path_dir, "stats.png")
@@ -222,7 +228,7 @@ def run(
 
     # top songs for each hour (from a top 5)
     top_songs_for_top_hours = get_top_songs_for_each_hour(
-        data, plays_per_hour, 5, "endLocalTime"
+        data, plays_per_hour, 5, "endLocalTime", join_word=locale.get_attr("by")
     )
     top_songs_for_top_hours = dict(sorted(top_songs_for_top_hours.items()))
     create_and_save_text_card(
