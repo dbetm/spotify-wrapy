@@ -62,7 +62,7 @@ Note: This will create a python virtual environment.
 
 ## Create my Spotify WraPy video
 
-1) In the folder with your data, look for the files named something like `StreamingHistory.json`. It could be only one, example: `StreamingHistory0.json`.
+1) In the folder with your data, look for the files named something like `StreamingHistory_music.json`. It could be only one, example: `StreamingHistory_music_0.json`.
 2) Copy those files and paste them into the `spotify_data/` folder inside the repository.
 3) Activate the virtual environment, if you haven't done so already.
 ```bash

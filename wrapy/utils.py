@@ -26,7 +26,7 @@ def load_streaming_history_data(file_path: Optional[str] = None) -> pd.DataFrame
 
         for file_ in files_:
             if file_.startswith("StreamingHistory"):
-                file_paths.append(f"{DEFAULT_DATA_DIR}/{file_}")
+                file_paths.append(os.path.join(DEFAULT_DATA_DIR, file_))
 
         if len(file_paths) == 0:
             raise Exception(

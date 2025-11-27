@@ -5,7 +5,7 @@
 ### Checklist
 
 - [ ] Run format-apply.
-- [ ] Add docstring in diffucult code parts.
+- [ ] Add docstring in difficult code parts.
 
 ------
 

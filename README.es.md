@@ -66,7 +66,7 @@ Nota: El comando anterior va a crear un entorno virtual de Python.
 
 ## Generar video de Spotify WraPy
 
-1) Dentro de la carpeta con tus datos busca los archivos llamados algo como `StreamingHistory.json`. Podría ser solo uno, llamado: `StreamingHistory0.json`.
+1) Dentro de la carpeta con tus datos busca los archivos llamados algo como `StreamingHistory_music.json`. Podría ser solo uno, llamado: `StreamingHistory_music_0.json`.
 2) Copia ese o esos archivos y pegalos en la carpeta `spotify_data/` que está dentro del repositorio.
 3) Activa el entorno virtual, si no lo has hecho.
 ```bash

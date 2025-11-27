@@ -142,7 +142,7 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
         background_img=Image.open(COVER_BG_IMAGE_PATH).convert("RGB"),
     )
     # create card for stats
-    stats_card_path = os.path.join(output_path_dir, "stats.png")
+    stats_card_path = os.path.join(output_path_dir, "05_stats.png")
     create_and_save_text_card(
         "Stats",
         text_stats,
@@ -152,7 +152,7 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
         content_font_size=18,
     )
     # create card for credits
-    credits_card_path = os.path.join(output_path_dir, "zz_credits.png")
+    credits_card_path = os.path.join(output_path_dir, "z10_credits.png")
     create_and_save_title_card(
         f"{locale.get_attr('download_from')}\n\n{REPO_URL}\n\n\n+)",
         credits_card_path,
@@ -202,7 +202,9 @@ def run(
         os.mkdir(output_path_dir)
 
     # Stats
-    text_stats = generate_and_save_stats(data, output_path_dir + "/" + "stats.txt")
+    text_stats = generate_and_save_stats(
+        data, os.path.join(output_path_dir, "stats.txt")
+    )
     logger.info("Stats generated")
 
     # Text cards
@@ -223,7 +225,7 @@ def run(
             for song in top_5_songs
         ],
         CARD_IMG_SIZE,
-        os.path.join(output_path_dir, "top_songs.png"),
+        os.path.join(output_path_dir, "06_top_songs.png"),
         title_font_size=25,
         content_font_size=18,
     )
@@ -240,7 +242,7 @@ def run(
             for hour, song in top_songs_for_top_hours.items()
         ],
         CARD_IMG_SIZE,
-        os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
+        os.path.join(output_path_dir, "09_top_songs_for_top_hours.png"),
         title_font_size=25,
         content_font_size=18,
     )
@@ -254,7 +256,7 @@ def run(
             for artist, plays in top_artists.items()
         ],
         CARD_IMG_SIZE,
-        os.path.join(output_path_dir, "top_artists.png"),
+        os.path.join(output_path_dir, "07_top_artists.png"),
         title_font_size=24,
         content_font_size=21,
     )
@@ -271,7 +273,7 @@ def run(
         data=plays_per_weekday,
         plot_title=locale.get_attr("plays_per_weekday_plot_title"),
         label_map_fn=partial(map_int_day_to_weekday_name, days_week_map),
-        save_path=output_path_dir + "/" + "plays_per_weekday.png",
+        save_path=os.path.join(output_path_dir, "03_plays_per_weekday.png"),
         title_font_size=20,
     )
     # accumulated plays per hour
@@ -281,7 +283,7 @@ def run(
         y=y_hour_values,
         plot_title=locale.get_attr("plays_per_hour_plot_title"),
         x_label=locale.get_attr("hour"),
-        save_path=output_path_dir + "/" + "plays_per_hour.png",
+        save_path=os.path.join(output_path_dir, "01_plays_per_hour.png"),
         title_font_size=20,
     )
     # accumulated plays per month - simple plot
@@ -292,7 +294,7 @@ def run(
         y=y_month_value,
         plot_title=locale.get_attr("plays_per_month_plot_title"),
         x_label=locale.get_attr("month"),
-        save_path=output_path_dir + "/" + "plays_per_month.png",
+        save_path=os.path.join(output_path_dir, "02_plays_per_month.png"),
         title_font_size=20,
     )
 
@@ -302,9 +304,9 @@ def run(
         title=locale.get_attr("artists_color_coded_from_top_songs").format(
             K=K_TOP_SONGS
         ),
-        save_path=output_path_dir
-        + "/"
-        + "star_with_artists_color_coded_from_top_songs.png",
+        save_path=os.path.join(
+            output_path_dir, "04_star_with_artists_color_coded_from_top_songs.png"
+        ),
     )
 
     gen_top_k_graph(
@@ -313,7 +315,7 @@ def run(
         title=locale.get_attr("play_history_from_top_songs").format(
             K=K_TOP_SONGS_GRAPH
         ),
-        save_path=(output_path_dir + "/" + "top_k_songs_history_graph.png"),
+        save_path=os.path.join(output_path_dir, "08_top_songs_history_graph.png"),
         k_top=K_TOP_SONGS_GRAPH,
     )
 
