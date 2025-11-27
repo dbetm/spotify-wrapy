@@ -3,6 +3,7 @@ import random
 from typing import Callable, List, Optional, Set, Union
 
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 import pandas as pd
 from matplotlib import cm
@@ -210,6 +211,7 @@ def create_polar_graph(
             ha="center",
             va="center",
             fontweight="semibold",
+            fontsize="medium",
         )
 
     # Set the title and the font size
@@ -217,7 +219,7 @@ def create_polar_graph(
         label=plot_title,
         fontsize=title_font_size,
         pad=20,
-        color=GREEN_BLUE_HEXA_COLOR,
+        color=WHITE_COLOR,
         weight="bold",
     )
 
@@ -256,7 +258,7 @@ def create_bar_graph(
         label=plot_title,
         fontsize=title_font_size,
         pad=20,
-        color=GREEN_BLUE_HEXA_COLOR,
+        color=WHITE_COLOR,
         weight="bold",
     )
     ax.set_xlabel(xlabel=x_label)
@@ -292,7 +294,7 @@ def create_simple_plot(
         label=plot_title,
         fontsize=title_font_size,
         pad=20,
-        color=GREEN_BLUE_HEXA_COLOR,
+        color=WHITE_COLOR,
         weight="bold",
     )
     plt.xlabel(xlabel=x_label)
@@ -399,13 +401,15 @@ def generate_n_star_viz(
     from the tops songs listened to. The number of spikes is equal to the number of records.
     """
     n = data.shape[0]
-    color_padding = 15
+    color_padding_dark = 70
+    color_padding_light = 10
     img_padding = 5
     random.seed(42)
 
     def get_random_color():
         return tuple(
-            random.randint(0 + color_padding, 255 - color_padding) for _ in range(3)
+            random.randint(0 + color_padding_dark, 255 - color_padding_light)
+            for _ in range(3)
         )
 
     colors_map = dict()
@@ -451,6 +455,98 @@ def generate_n_star_viz(
     # Put text title
     font = ImageFont.load_default(size=50)
     # Step 5: Draw the text on the image
-    draw.text((100, 200), title, fill=GREEN_BLUE_HEXA_COLOR, font=font)
+    draw.text((100, 200), title, fill=WHITE_COLOR, font=font)
 
     image.save(save_path)
+
+
+def gen_top_k_graph(
+    data: pd.DataFrame,
+    img_size: tuple,
+    title: str,
+    save_path: str,
+    k_top: int = 15,
+    song_column: str = "trackName",
+    artist_column: str = "artistName",
+) -> None:
+    song_id_key = "song_id"
+    data[song_id_key] = data[song_column] + "\n" + data[artist_column]
+
+    data["endTime"] = pd.to_datetime(data["endTime"])
+    data = data.sort_values("endTime")
+
+    top_k = data[song_id_key].value_counts().head(k_top).index
+
+    df_top = data[data[song_id_key].isin(top_k)].copy()
+    # (song → next_song)
+    df_top.loc[:, "next_song"] = df_top[song_id_key].shift(-1)
+
+    df_edges = df_top[df_top["next_song"].isin(top_k)][[song_id_key, "next_song"]]
+
+    transition_counts = (
+        df_edges.groupby([song_id_key, "next_song"]).size().reset_index(name="weight")
+    )
+
+    # create graph
+    G = nx.DiGraph()
+
+    for _, row in transition_counts.iterrows():
+        G.add_edge(row[song_id_key], row["next_song"], weight=row["weight"])
+
+    # Create a unique color per node
+    nodes = list(G.nodes())
+    num_nodes = len(nodes)
+
+    colors = plt.cm.tab10(np.linspace(0, 1, num_nodes))  # hasta 20 colores
+    color_map = dict(zip(nodes, colors))
+
+    # List colors in the same order that the nodes in the graph
+    node_colors = [color_map[n] for n in nodes]
+
+    # plot graph
+    px_h, px_w = img_size
+    dpi = 100
+    fig = plt.figure(figsize=(px_w / dpi, px_h / dpi), facecolor="black")
+
+    pos = nx.spring_layout(G, k=1.1, seed=42)
+
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_color=node_colors,
+        node_size=10_000,
+        font_size=14,
+        arrows=True,
+        arrowstyle="-|>",
+        arrowsize=12,
+        edge_color="white",
+        font_color="white",
+    )
+
+    # ---- edge labels (weight) ----
+    edge_labels = nx.get_edge_attributes(G, "weight")
+
+    ax = plt.gca()
+
+    # Get Y limits (usually from 0 to 1 or -1 to 1)
+    y_min, y_max = ax.get_ylim()
+    # move a bit the graph from the top
+    ax.set_ylim(y_min, y_max * 1.2)
+
+    nx.draw_networkx_edge_labels(
+        G,
+        pos,
+        edge_labels=edge_labels,
+        font_size=12,
+    )
+
+    fig.suptitle(
+        title,
+        fontsize=28,
+        color=GREEN_BLUE_HEXA_COLOR,
+        weight="bold",
+        y=0.93,  # keep top margin
+    )
+
+    plt.savefig(save_path, dpi=300, facecolor="black")
