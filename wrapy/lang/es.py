@@ -22,6 +22,9 @@ class EsLocale(Locale):
         self._top_songs_for_top_hours_card_title = (
             "Canciones top en las horas más escuchadas"
         )
+        self._play_history_from_top_songs = (
+            "Historia de reproducción \nde las {K} canciones más escuchadas"
+        )
         self._at_time = "a las"
         self._download_from = "Genera el tuyo con:"
         self._artists_color_coded_from_top_songs = (

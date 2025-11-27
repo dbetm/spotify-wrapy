@@ -17,6 +17,7 @@ from wrapy.constants import (
     DEFAULT_OUTPUT_PATH,
     END_LOCAL_TIME_COL_NAME,
     K_TOP_SONGS,
+    K_TOP_SONGS_GRAPH,
     LIMIT_DATE_FORMAT,
     REPO_URL,
     VIDEO_DIMENSIONS,
@@ -30,6 +31,7 @@ from wrapy.core import (
     create_bar_graph,
     create_polar_graph,
     create_simple_plot,
+    gen_top_k_graph,
     generate_n_star_viz,
     generate_plays_to_x_map,
     get_average_plays_per_day,
@@ -155,7 +157,7 @@ def make_video(output_path_dir: str, text_stats: List[str], period: str) -> None
         f"{locale.get_attr('download_from')}\n\n{REPO_URL}\n\n\n+)",
         credits_card_path,
         CARD_IMG_SIZE,
-        font_size=20,
+        font_size=26,
     )
 
     image_paths = [
@@ -239,7 +241,8 @@ def run(
         ],
         CARD_IMG_SIZE,
         os.path.join(output_path_dir, "top_songs_for_top_hours.png"),
-        content_font_size=16,
+        title_font_size=25,
+        content_font_size=18,
     )
 
     # top artists
@@ -252,8 +255,8 @@ def run(
         ],
         CARD_IMG_SIZE,
         os.path.join(output_path_dir, "top_artists.png"),
-        title_font_size=23,
-        content_font_size=20,
+        title_font_size=24,
+        content_font_size=21,
     )
 
     logger.info("Text cards generated")
@@ -302,6 +305,16 @@ def run(
         save_path=output_path_dir
         + "/"
         + "star_with_artists_color_coded_from_top_songs.png",
+    )
+
+    gen_top_k_graph(
+        data=data,
+        img_size=CARD_IMG_SIZE,
+        title=locale.get_attr("play_history_from_top_songs").format(
+            K=K_TOP_SONGS_GRAPH
+        ),
+        save_path=(output_path_dir + "/" + "top_k_songs_history_graph.png"),
+        k_top=K_TOP_SONGS_GRAPH,
     )
 
     logger.info("Plots generated")
